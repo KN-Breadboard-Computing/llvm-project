@@ -1,4 +1,4 @@
-//===-- BBCompTargetMachine.h - Define TargetMachine for BBComp -*- C++ -*-===//
+//===-- BBCPUTargetMachine.h - Define TargetMachine for BBCPU ---*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -6,21 +6,21 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file declares the BBComp specific subclass of TargetMachine.
+// This file declares the BBCPU specific subclass of TargetMachine.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LLVM_LIB_TARGET_BBCOMP_BBCOMPTARGETMACHINE_H
-#define LLVM_LIB_TARGET_BBCOMP_BBCOMPTARGETMACHINE_H
+#ifndef LLVM_BBCPU_TARGET_MACHINE_H
+#define LLVM_BBCPU_TARGET_MACHINE_H
 
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {
-class BBCompTargetMachine : LLVMTargetMachine {
-  BBCompTargetMachine(const Target &T, const Triple &TT, StringRef CPU,
+class BBCPUTargetMachine : LLVMTargetMachine {
+  BBCPUTargetMachine(const Target &T, const Triple &TT, StringRef CPU,
                       StringRef FS, const TargetOptions &Options,
                       std::optional<Reloc::Model> RM,
                       std::optional<CodeModel::Model> CM, CodeGenOptLevel OL);
 };
 } // end namespace llvm
-#endif
+#endif // LLVM_BBCPU_TARGET_MACHINE_H

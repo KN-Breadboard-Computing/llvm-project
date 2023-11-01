@@ -1,4 +1,4 @@
-//===-- BBCompTargetInfo.h - BBComp Target Implementation -------*- C++ -*-===//
+//===-- BBCPUTargetInfo.h - BBCPU Target Implementation ---------*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -6,13 +6,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LLVM_LIB_TARGET_BBCOMP_BBCOMPTARGETINFO_H
-#define LLVM_LIB_TARGET_BBCOMP_BBCOMPTARGETINFO_H
+#ifndef LLVM_BBCPU_TARGET_INFO_H
+#define LLVM_BBCPU_TARGET_INFO_H
 
 namespace llvm {
 class Target;
 
-Target &getTheBBCompTarget();
+Target &getTheBBCPUTarget();
 } // end namespace llvm
 
-#endif
+#endif // LLVM_BBCPU_TARGET_INFO_H
