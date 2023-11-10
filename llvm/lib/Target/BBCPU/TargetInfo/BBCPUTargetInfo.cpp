@@ -20,6 +20,3 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeBBCPUTargetInfo() {
       getTheBBCPUTarget(), "bbcpu",
       "8-bit CPU by KN Breadboard Computing", "BBCPU");
 }
-
-// FIXME: Empty stub just so things link correctly
-extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeBBCPUTargetMC() {}
