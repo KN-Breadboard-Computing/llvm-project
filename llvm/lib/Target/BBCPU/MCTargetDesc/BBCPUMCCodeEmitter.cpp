@@ -14,6 +14,7 @@
 #include "BBCPUMCTargetDesc.h"
 
 #include "llvm/MC/MCInst.h"
+#include "llvm/MC/MCValue.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/EndianStream.h"
 
@@ -48,12 +49,26 @@ void BBCPUMCCodeEmitter::encodeInstruction(
     support::endian::write(CB, Byte, llvm::endianness::little);
   }
 }
-unsigned
-BBCPUMCCodeEmitter::getMachineOpValue(const MCInst &MI, const MCOperand &MO,
-                                      SmallVectorImpl<MCFixup> &Fixups,
-                                      const MCSubtargetInfo &STI) const {
-  assert(MO.isImm() && "Only immediate is supported");
-  return static_cast<unsigned>(MO.getImm());
+
+template <MCFixupKind Fixup, uint32_t Offset>
+uint64_t encodeImm(const MCInst &MI, unsigned int OpNo,
+                   SmallVectorImpl<llvm::MCFixup> &Fixups,
+                   const MCSubtargetInfo &STI) {
+  const MCOperand &Op = MI.getOperand(OpNo);
+
+  // If Op is just a constant simply emit it
+  if (Op.isImm()) {
+    return Op.getImm();
+  }
+
+  // If Op is an expression fill whatever it occupies with 0 and create a fixup
+  // that will fill in the slot later
+  if (Op.isExpr()) {
+    Fixups.push_back(MCFixup::create(Offset, Op.getExpr(), Fixup));
+    return 0;
+  }
+
+  llvm_unreachable("unexpected operand kind");
 }
 
 MCCodeEmitter *llvm::createBBCPUMCCodeEmitter(const llvm::MCInstrInfo &MCII,

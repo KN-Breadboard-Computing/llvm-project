@@ -35,6 +35,7 @@ class BBCPUAsmParser : public MCTargetAsmParser {
   int parseRegister();
   bool parseOperand(OperandVector &Operands);
   bool parseImmediate(const MCExpr *&Expr, SMLoc &Start, SMLoc &End);
+  bool parseMemory(const MCExpr *&Expr, SMLoc &Start, SMLoc &End);
 
 public:
   BBCPUAsmParser(const MCSubtargetInfo &STI, MCAsmParser &P,
@@ -63,34 +64,41 @@ class BBCPUOperand : public MCParsedAsmOperand {
   enum KindTy {
     Immediate,
     Register,
+    Memory,
     Token,
   } Kind;
 
-  struct RegisterImmediate {
+  struct RegisterMemImm {
     unsigned Reg;
-    MCExpr const *Imm;
+    MCExpr const *MemImm;
   };
 
   union {
-    RegisterImmediate RegImm;
+    RegisterMemImm RegMemImm;
     StringRef Tok;
   };
 
   SMLoc Start, End;
 
 public:
-  BBCPUOperand(const MCExpr *Imm, const SMLoc &Start, const SMLoc &End)
-      : Kind(Immediate), RegImm{0, Imm}, Start(Start), End(End) {}
+  BBCPUOperand(const MCExpr *Imm, KindTy Kind, const SMLoc &Start,
+               const SMLoc &End)
+      : Kind(Kind), RegMemImm{0, Imm}, Start(Start), End(End) {}
 
   BBCPUOperand(unsigned Reg, const SMLoc &Start, const SMLoc &End)
-      : Kind(Register), RegImm{Reg, nullptr}, Start(Start), End(End) {}
+      : Kind(Register), RegMemImm{Reg, nullptr}, Start(Start), End(End) {}
 
   BBCPUOperand(StringRef Tok, const SMLoc &Loc)
       : Kind(Token), Tok(Tok), Start(Loc), End(Loc) {}
 
   static std::unique_ptr<MCParsedAsmOperand>
   createImm(const MCExpr *Imm, const SMLoc &Start, const SMLoc &End) {
-    return std::make_unique<BBCPUOperand>(Imm, Start, End);
+    return std::make_unique<BBCPUOperand>(Imm, Immediate, Start, End);
+  }
+
+  static std::unique_ptr<MCParsedAsmOperand>
+  createMem(const MCExpr *Mem, const SMLoc &Start, const SMLoc &End) {
+    return std::make_unique<BBCPUOperand>(Mem, Memory, Start, End);
   }
 
   static std::unique_ptr<MCParsedAsmOperand>
@@ -106,23 +114,22 @@ public:
   bool isToken() const override { return Kind == Token; }
   bool isImm() const override { return Kind == Immediate; }
   bool isReg() const override { return Kind == Register; }
+  bool isMem() const override { return Kind == Memory; }
 
   const MCExpr *getExpr() const {
-    assert(Kind == Immediate && "Unexpected operand kind");
-    return RegImm.Imm;
+    assert((Kind == Immediate || Kind == Memory) && "Unexpected operand kind");
+    return RegMemImm.MemImm;
   }
 
   unsigned int getReg() const override {
     assert(Kind == Register && "Unexpected operand kind");
-    return RegImm.Reg;
+    return RegMemImm.Reg;
   }
 
   StringRef getToken() const {
     assert(Kind == Token && "Unexpected token kind");
     return Tok;
   }
-
-  bool isMem() const override { return false; }
 
   SMLoc getStartLoc() const override { return Start; }
 
@@ -137,10 +144,16 @@ public:
       OS << "Register: " << getReg();
       break;
     case Immediate:
-      OS << "Immediate: \"" << *getExpr() << "\"";
+      OS << "Immediate: \"";
+      getExpr()->print(OS, nullptr);
+      OS << "\"";
+      break;
+    case Memory:
+      OS << "Memory: \"";
+      getExpr()->print(OS, nullptr);
+      OS << "\"";
       break;
     }
-    OS << "\n";
   }
 
   void addRegOperands(MCInst &Inst, unsigned N) const {
@@ -152,6 +165,19 @@ public:
 
   void addImmOperands(MCInst &Inst, unsigned N) const {
     assert(Kind == Immediate && "Unexpected operand kind");
+    assert(N == 1 && "Invalid number of operands");
+
+    const MCExpr *Expr = getExpr();
+    if (!Expr)
+      Inst.addOperand(MCOperand::createImm(0));
+    else if (const MCConstantExpr *CE = dyn_cast<MCConstantExpr>(Expr))
+      Inst.addOperand(MCOperand::createImm(CE->getValue()));
+    else
+      Inst.addOperand(MCOperand::createExpr(Expr));
+  }
+
+  void addMemOperands(MCInst &Inst, unsigned N) const {
+    assert(Kind == Memory && "Unexpected operand kind");
     assert(N == 1 && "Invalid number of operands");
 
     const MCExpr *Expr = getExpr();
@@ -209,13 +235,31 @@ ParseStatus BBCPUAsmParser::tryParseRegister(MCRegister &Reg, SMLoc &StartLoc,
 
 bool BBCPUAsmParser::parseImmediate(const MCExpr *&Expr, SMLoc &Start,
                                     SMLoc &End) {
-  if (getParser().getTok().getKind() == AsmToken::Integer) {
-    Start = getParser().getTok().getLoc();
-    return getParser().parseExpression(Expr, End);
-  }
-
   LLVM_DEBUG(dbgs() << "Got token kind = " << getParser().getTok().getKind()
                     << ", tok = " << getParser().getTok().getString() << '\n');
+
+  Start = getLexer().getLoc();
+  return getParser().parseExpression(Expr, End);
+}
+
+bool BBCPUAsmParser::parseMemory(const llvm::MCExpr *&Expr, llvm::SMLoc &Start,
+                                 llvm::SMLoc &End) {
+  if (getLexer().is(AsmToken::LBrac)) {
+    SMLoc LBLoc = getLexer().getLoc();
+    getLexer().Lex(); // Eat opening `[`
+
+    Start = getLexer().getLoc();
+    if (getParser().parseExpression(Expr, End))
+      return true;
+
+    if (getLexer().isNot(AsmToken::RBrac))
+      return Error(getLexer().getLoc(), "expected closing `]`",
+                   SMRange(LBLoc, getLexer().getLoc()));
+
+    getLexer().Lex(); // Eat closing `]`
+    return false;
+  }
+
   return false;
 }
 
@@ -303,16 +347,23 @@ bool BBCPUAsmParser::parseOperand(OperandVector &Operands) {
   }
 
   const MCExpr *Imm;
+  if (getLexer().is(AsmToken::LBrac)) {
+    if (!parseImmediate(Imm, Start, End)) {
+      LLVM_DEBUG(dbgs() << "Parsed immediate memory address operand imm = "
+                        << Imm << '\n');
+      Operands.push_back(BBCPUOperand::createMem(Imm, Start, End));
+      return false;
+    }
+  }
+
   if (!parseImmediate(Imm, Start, End)) {
     LLVM_DEBUG(dbgs() << "Parsed immediate operand imm = " << Imm << '\n');
     Operands.push_back(BBCPUOperand::createImm(Imm, Start, End));
     return false;
   }
 
-  // TODO: Support memory address operand
-
   return Error(getParser().getTok().getLoc(),
-               "could not parse as register or immediate");
+               "expected register, immediate or memory reference");
 }
 
 void BBCPUAsmParser::onBeginOfFile() {

@@ -14,7 +14,20 @@
 // Operand and SDNode transformation definitions
 //===----------------------------------------------------------------------===//
 
+def MemOperandClass : AsmOperandClass {
+    let Name = "Mem";
+}
 
+def imm8 : Operand<i8> {
+    let EncoderMethod = "encodeImm<MCFixupKind::FK_Data_1, 1>";
+}
+
+def mem : Operand<i16> {
+    let ParserMatchClass = MemOperandClass;
+    let OperandType = "OPERAND_MEMORY";
+    let MIOperandInfo = (ops i16imm);
+    let EncoderMethod = "encodeImm<MCFixupKind::FK_Data_2, 1>";
+}
 
 //===----------------------------------------------------------------------===//
 // Opcode and Instruction definitions
@@ -31,7 +44,7 @@ def OPC_NOP : BBCPUOpcode<0b00000000>;
 // OPC_MOVBA
 def OPC_MOVAIMM : BBCPUOpcode<0b00000011>; // 0x03
 def OPC_MOVBIMM : BBCPUOpcode<0b00000100>; // 0x04
-// OPC_MOVAABS
+def OPC_MOVAABS : BBCPUOpcode<0b00000101>; // 0x05
 // OPC_MOVBABS
 // OPC_MOVABSA
 // OPC_MOVABSB
@@ -125,9 +138,21 @@ class BBCPUTernaryRegInstr<BBCPUOpcode opcode, dag outs, dag ins, string opcodes
   let Opcode = opcode.Value;
 }
 
+class BBCPURegMemInstr<BBCPUOpcode opcode, dag outs, dag ins, string opcodestr, string argstr>
+    : BBCPUInstr<outs, ins, opcodestr, argstr, []> {
+  bits<1> dst;
+  bits<16> imm;
+
+  let Size = 3;
+
+  let Opcode = opcode.Value;
+  let Inst{23-8} = imm;
+}
+
 def NOP : BBCPUNoopInstr<OPC_NOP, "nop">;
-def MOVAIMM : BBCPURegImmInstr<OPC_MOVAIMM, (outs RA:$dst), (ins i8imm:$imm), "mov", "$dst, $imm">;
-def MOVBIMM : BBCPURegImmInstr<OPC_MOVBIMM, (outs RB:$dst), (ins i8imm:$imm), "mov", "$dst, $imm">;
+def MOVAIMM : BBCPURegImmInstr<OPC_MOVAIMM, (outs RA:$dst), (ins imm8:$imm), "mov", "$dst, $imm">;
+def MOVBIMM : BBCPURegImmInstr<OPC_MOVBIMM, (outs RB:$dst), (ins imm8:$imm), "mov", "$dst, $imm">;
+def MOVAABS : BBCPURegMemInstr<OPC_MOVAABS, (outs RA:$dst), (ins mem:$imm), "mov", "$dst, $imm">;
 def ADDA : BBCPUTernaryRegInstr<OPC_ADDA, (outs RA:$dst), (ins GPR:$src0, GPR:$src1), "add", "$dst, $src0, $src1">;
 def ADDB : BBCPUTernaryRegInstr<OPC_ADDB, (outs RB:$dst), (ins GPR:$src0, GPR:$src1), "add", "$dst, $src0, $src1">;
 def HALT : BBCPUNoopInstr<OPC_HALT, "halt">;

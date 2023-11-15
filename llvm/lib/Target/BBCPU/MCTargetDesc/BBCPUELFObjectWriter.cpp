@@ -29,25 +29,23 @@ unsigned int BBCPUELFObjectWriter::getRelocType(MCContext &Ctx,
   const unsigned Kind = Fixup.getTargetKind();
   if (Kind >= FirstLiteralRelocationKind)
     return Kind - FirstLiteralRelocationKind;
+
   MCSymbolRefExpr::VariantKind Modifier = Target.getAccessVariant();
-  switch ((unsigned)Fixup.getKind()) {
-  case FK_Data_1:
-    switch (Modifier) {
-    default:
-      llvm_unreachable("Unsupported Modifier");
-    }
-  case FK_Data_4:
-    switch (Modifier) {
-    default:
-      llvm_unreachable("Unsupported Modifier");
-    }
-  case FK_Data_2:
-    switch (Modifier) {
-    default:
-      llvm_unreachable("Unsupported Modifier");
-    }
+
+  switch (Modifier) {
   default:
-    llvm_unreachable("invalid fixup kind!");
+    llvm_unreachable("unsupported modifier");
+  case MCSymbolRefExpr::VK_None:
+    switch ((unsigned)Kind) {
+    default:
+      llvm_unreachable("invalid fixup kind!");
+    case FK_NONE:
+      return ELF::R_BBCPU_NONE;
+    case FK_Data_1:
+      return ELF::R_BBCPU_8;
+    case FK_Data_2:
+      return ELF::R_BBCPU_16;
+    }
   }
 }
 } // end namespace llvm
