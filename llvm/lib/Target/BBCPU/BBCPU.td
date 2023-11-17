@@ -38,6 +38,11 @@ def BBCPUInstrInfo : InstrInfo;
 // Target Declaration
 //===---------------------------------------------------------------------===//
 
+def BBCPUAsmParser : AsmParser {
+    let ShouldEmitMatchRegisterAltName = 1;
+}
+
 def BBCPU : Target {
     let InstructionSet = BBCPUInstrInfo;
+    let AssemblyParsers = [BBCPUAsmParser];
 }

@@ -207,6 +207,10 @@ int BBCPUAsmParser::parseRegister() {
   if (getParser().getTok().is(AsmToken::Identifier)) {
     StringRef ID = getParser().getTok().getString();
     Reg = MatchRegisterName(ID);
+
+    if (Reg == BBCPU::NoRegister) {
+      Reg = MatchRegisterAltName(ID);
+    }
   }
 
   return Reg;
