@@ -56,8 +56,6 @@ public:
                                OperandVector &Operands, MCStreamer &Out,
                                uint64_t &ErrorInfo,
                                bool MatchingInlineAsm) override;
-
-  void onBeginOfFile() override;
 };
 
 class BBCPUOperand : public MCParsedAsmOperand {
@@ -368,10 +366,6 @@ bool BBCPUAsmParser::parseOperand(OperandVector &Operands) {
 
   return Error(getParser().getTok().getLoc(),
                "expected register, immediate or memory reference");
-}
-
-void BBCPUAsmParser::onBeginOfFile() {
-  getParser().setShowParsedOperands(true);
 }
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeBBCPUAsmParser() {
