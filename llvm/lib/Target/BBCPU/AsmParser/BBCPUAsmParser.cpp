@@ -26,6 +26,11 @@ using namespace llvm;
 
 namespace {
 class BBCPUAsmParser : public MCTargetAsmParser {
+  enum class ParsedMemType {
+    MemAbsolute,
+    MemZeroPage,
+  };
+
   MCAsmParser *Parser;
 
   bool emit(MCInst &Inst, const SMLoc &Loc, MCStreamer &Out);
@@ -35,7 +40,7 @@ class BBCPUAsmParser : public MCTargetAsmParser {
   int parseRegister();
   bool parseOperand(OperandVector &Operands);
   bool parseImmediate(const MCExpr *&Expr, SMLoc &Start, SMLoc &End);
-  bool parseMemory(const MCExpr *&Expr, SMLoc &Start, SMLoc &End);
+  bool parseMemory(const MCExpr *&Expr, SMLoc &Start, SMLoc &End, ParsedMemType& Type, bool Inside = false);
 
 public:
   BBCPUAsmParser(const MCSubtargetInfo &STI, MCAsmParser &P,
@@ -64,6 +69,8 @@ class BBCPUOperand : public MCParsedAsmOperand {
     Register,
     Memory,
     Token,
+    MemZeroPage,
+    IndexedReg
   } Kind;
 
   struct RegisterMemImm {
@@ -83,8 +90,8 @@ public:
                const SMLoc &End)
       : Kind(Kind), RegMemImm{0, Imm}, Start(Start), End(End) {}
 
-  BBCPUOperand(unsigned Reg, const SMLoc &Start, const SMLoc &End)
-      : Kind(Register), RegMemImm{Reg, nullptr}, Start(Start), End(End) {}
+  BBCPUOperand(unsigned Reg, bool Indexed, const SMLoc &Start, const SMLoc &End)
+      : Kind(Indexed ? IndexedReg : Register), RegMemImm{Reg, nullptr}, Start(Start), End(End) {}
 
   BBCPUOperand(StringRef Tok, const SMLoc &Loc)
       : Kind(Token), Tok(Tok), Start(Loc), End(Loc) {}
@@ -101,7 +108,16 @@ public:
 
   static std::unique_ptr<MCParsedAsmOperand>
   createReg(unsigned Reg, const SMLoc &Start, const SMLoc &End) {
-    return std::make_unique<BBCPUOperand>(Reg, Start, End);
+    return std::make_unique<BBCPUOperand>(Reg, false, Start, End);
+  }
+
+  static std::unique_ptr<MCParsedAsmOperand>
+  createMemZeroPage(const MCExpr *Mem, const SMLoc &Start, const SMLoc &End) {
+    return std::make_unique<BBCPUOperand>(Mem, MemZeroPage, Start, End);
+  }
+
+  static std::unique_ptr<MCParsedAsmOperand> createIndexedReg(unsigned Reg, const SMLoc &Start, const SMLoc &End) {
+    return std::make_unique<BBCPUOperand>(Reg, true, Start, End);
   }
 
   static std::unique_ptr<MCParsedAsmOperand> createToken(StringRef Tok,
@@ -113,14 +129,16 @@ public:
   bool isImm() const override { return Kind == Immediate; }
   bool isReg() const override { return Kind == Register; }
   bool isMem() const override { return Kind == Memory; }
+  bool isMemZeroPage() const { return Kind == MemZeroPage; }
+  bool isIndexedReg() const { return Kind == IndexedReg; }
 
   const MCExpr *getExpr() const {
-    assert((Kind == Immediate || Kind == Memory) && "Unexpected operand kind");
+    assert((Kind == Immediate || Kind == Memory || Kind == MemZeroPage) && "Unexpected operand kind");
     return RegMemImm.MemImm;
   }
 
   unsigned int getReg() const override {
-    assert(Kind == Register && "Unexpected operand kind");
+    assert((Kind == Register || Kind == IndexedReg) && "Unexpected operand kind");
     return RegMemImm.Reg;
   }
 
@@ -151,6 +169,14 @@ public:
       getExpr()->print(OS, nullptr);
       OS << "\"";
       break;
+    case MemZeroPage:
+      OS << "Memory Zero Page: \"";
+      getExpr()->print(OS, nullptr);
+      OS << "\"";
+      break;
+    case IndexedReg:
+      OS << "IndexedReg: " << getReg();
+      break;
     }
   }
 
@@ -176,6 +202,27 @@ public:
 
   void addMemOperands(MCInst &Inst, unsigned N) const {
     assert(Kind == Memory && "Unexpected operand kind");
+    assert(N == 1 && "Invalid number of operands");
+
+    addMemLikeOperands(Inst, N);
+  }
+
+  void addMemZeroPageOperands(MCInst &Inst, unsigned N) const {
+    assert(Kind == MemZeroPage && "Unexpected operand kind");
+    assert(N == 1 && "Invalid number of operands");
+
+    addMemLikeOperands(Inst, N);
+  }
+
+  void addIndexedRegOperands(MCInst &Inst, unsigned N) const {
+    assert(Kind == IndexedReg && "Unexpected operand kind");
+    assert(N == 1 && "Invalid number of operands");
+    // do nothing, indexed reg destination is already encoded in the opcode
+  }
+
+private:
+  void addMemLikeOperands(MCInst &Inst, unsigned N) const {
+    assert((Kind == Memory || Kind == MemZeroPage) && "Unexpected operand kind");
     assert(N == 1 && "Invalid number of operands");
 
     const MCExpr *Expr = getExpr();
@@ -245,20 +292,46 @@ bool BBCPUAsmParser::parseImmediate(const MCExpr *&Expr, SMLoc &Start,
 }
 
 bool BBCPUAsmParser::parseMemory(const llvm::MCExpr *&Expr, llvm::SMLoc &Start,
-                                 llvm::SMLoc &End) {
-  if (getLexer().is(AsmToken::LBrac)) {
+                                 llvm::SMLoc &End, ParsedMemType &Type, bool Inside) {
+  if (Inside || getLexer().is(AsmToken::LBrac)) {
     SMLoc LBLoc = getLexer().getLoc();
-    getLexer().Lex(); // Eat opening `[`
+    if (!Inside) getLexer().Lex(); // eat `[`
 
     Start = getLexer().getLoc();
-    if (getParser().parseExpression(Expr, End))
-      return true;
-
-    if (getLexer().isNot(AsmToken::RBrac))
-      return Error(getLexer().getLoc(), "expected closing `]`",
+    const llvm::MCExpr *Seg;
+    if (getParser().parseExpression(Seg, End) || !Expr)
+      return Error(getLexer().getLoc(), "expected an expression",
                    SMRange(LBLoc, getLexer().getLoc()));
 
-    getLexer().Lex(); // Eat closing `]`
+    if (getLexer().isNot(AsmToken::Colon)) {
+      if (parseToken(AsmToken::RBrac, "expected `]`"))
+        return true;
+
+      Type = ParsedMemType::MemAbsolute;
+      Expr = Seg;
+      return false;
+    }
+
+    const MCConstantExpr *CSeg = dyn_cast<MCConstantExpr>(Seg);
+    if (!CSeg)
+      return Error(getLexer().getLoc(), "expected a constant",
+                   SMRange(LBLoc, getLexer().getLoc()));
+
+    if (CSeg->getValue() != 0)
+      return Error(getLexer().getLoc(), "expected page `0`",
+                   SMRange(LBLoc, getLexer().getLoc()));
+
+    if (parseToken(AsmToken::Colon, "expected `:`"))
+      return true;
+
+    if (getParser().parseExpression(Expr, End))
+      return Error(getLexer().getLoc(), "expected address expression",
+                   SMRange(LBLoc, getLexer().getLoc()));
+
+    if (parseToken(AsmToken::RBrac, "expected `]`"))
+      return true;
+
+    Type = ParsedMemType::MemZeroPage;
     return false;
   }
 
@@ -341,31 +414,52 @@ bool BBCPUAsmParser::parseOperand(OperandVector &Operands) {
   SMLoc End;
 
   MCRegister Reg;
+  const MCExpr* Expr;
+
+  if (getLexer().is(AsmToken::LBrac)) {
+    Lex();
+
+    if (!parseRegister(Reg, Start, End)) {
+      Lex();
+
+      if (parseToken(AsmToken::RBrac, "expected closing `]`"))
+        return true;
+
+      End = getLexer().getLoc();
+
+      Operands.push_back(BBCPUOperand::createIndexedReg(Reg, Start, End));
+      return false;
+    }
+
+    ParsedMemType Type;
+    if (!parseMemory(Expr, Start, End, Type, true)) {
+      if (Type == ParsedMemType::MemAbsolute) {
+        Operands.push_back(BBCPUOperand::createMem(Expr, Start, End));
+      } else {
+        Operands.push_back(BBCPUOperand::createMemZeroPage(Expr, Start, End));
+      }
+      return false;
+    }
+
+    End = getLexer().getLoc();
+    return Error(Start, "expected register or memory", SMRange(Start, End));
+  }
+
   if (!parseRegister(Reg, Start, End)) {
-    getLexer().Lex(); // eat the register token
-    LLVM_DEBUG(dbgs() << "Parsed register operand reg = " << Reg << '\n');
+    Lex();
+    End = getLexer().getLoc();
+
     Operands.push_back(BBCPUOperand::createReg(Reg, Start, End));
     return false;
   }
 
-  const MCExpr *Imm;
-  if (getLexer().is(AsmToken::LBrac)) {
-    if (!parseImmediate(Imm, Start, End)) {
-      LLVM_DEBUG(dbgs() << "Parsed immediate memory address operand imm = "
-                        << Imm << '\n');
-      Operands.push_back(BBCPUOperand::createMem(Imm, Start, End));
-      return false;
-    }
-  }
-
-  if (!parseImmediate(Imm, Start, End)) {
-    LLVM_DEBUG(dbgs() << "Parsed immediate operand imm = " << Imm << '\n');
-    Operands.push_back(BBCPUOperand::createImm(Imm, Start, End));
+  if (!getParser().parseExpression(Expr, End)) {
+    Operands.push_back(BBCPUOperand::createImm(Expr, Start, End));
     return false;
   }
 
-  return Error(getParser().getTok().getLoc(),
-               "expected register, immediate or memory reference");
+  End = getLexer().getLoc();
+  return Error(getLexer().getLoc(), "expected an operand", SMRange(Start, End));
 }
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeBBCPUAsmParser() {

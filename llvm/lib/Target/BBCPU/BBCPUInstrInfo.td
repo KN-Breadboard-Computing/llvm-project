@@ -18,6 +18,14 @@ def MemOperandClass : AsmOperandClass {
     let Name = "Mem";
 }
 
+def MemZeroPageOperandClass : AsmOperandClass {
+  let Name = "MemZeroPage";
+}
+
+def IndexedRegOperandClass : AsmOperandClass {
+  let Name = "IndexedReg";
+}
+
 def imm8 : Operand<i8> {
     let EncoderMethod = "encodeImm<MCFixupKind::FK_Data_1, 1>";
 }
@@ -27,6 +35,20 @@ def mem : Operand<i16> {
     let OperandType = "OPERAND_MEMORY";
     let MIOperandInfo = (ops i16imm);
     let EncoderMethod = "encodeImm<MCFixupKind::FK_Data_2, 1>";
+}
+
+def memzp : Operand<i8> {
+    let ParserMatchClass = MemZeroPageOperandClass;
+    let OperandType = "OPERAND_MEMORY";
+    let MIOperandInfo = (ops i8imm);
+    let EncoderMethod = "encodeImm<MCFixupKind::FK_Data_1, 1>";
+}
+
+class IndexedReg<Register reg> : Operand<OtherVT> {
+  field Register Reg = reg;
+
+  let OperandType = "OPERAND_REGISTER";
+  let ParserMatchClass = IndexedRegOperandClass;
 }
 
 //===----------------------------------------------------------------------===//
@@ -292,7 +314,7 @@ class BBCPUBinaryRegInstr<BBCPUOpcode opcode, Register dst, Register src, string
 }
 
 class BBCPUTernaryRegInstr<BBCPUOpcode opcode, Register dst, Register src1, Register src2,
-  string opcodestr, string argstr, dag ins = (ins)> : BBCPUInstr<(outs), ins, opcodestr, argstr, []> {
+  string opcodestr, string argstr> : BBCPUInstr<(outs), ins, opcodestr, argstr, []> {
   let Defs = [dst];
   let Uses = [src1, src2];
 
@@ -336,6 +358,19 @@ class BBCPUMemInstr<BBCPUOpcode opcode, dag ins, string opcodestr, string argstr
   let Inst{23-8} = imm;
 }
 
+class BBCPURegMemZPInstr<BBCPUOpcode opcode, Register dst, string opcodestr, string argstr>
+    : BBCPUInstr<(outs), (ins memzp:$imm), opcodestr, argstr, []> {
+  let Defs = [dst];
+  let Uses = [T];
+
+  bits<8> imm;
+
+  let Size = 2;
+
+  let Opcode = opcode.Value;
+  let Inst{15-8} = imm;
+}
+
 class BBCPUMemRegInstr<BBCPUOpcode opcode, Register src, string opcodestr, string argstr>
     : BBCPUInstr<(outs mem:$imm), (ins), opcodestr, argstr, []> {
   let Uses = [src, T];
@@ -348,8 +383,20 @@ class BBCPUMemRegInstr<BBCPUOpcode opcode, Register src, string opcodestr, strin
   let Inst{23-8} = imm;
 }
 
+class BBCPUMemZPRegInstr<BBCPUOpcode opcode, Register src, string opcodestr, string argstr>
+    : BBCPUInstr<(outs memzp:$imm), (ins), opcodestr, argstr, []> {
+  let Uses = [src, T];
+
+  bits<16> imm;
+
+  let Size = 3;
+
+  let Opcode = opcode.Value;
+  let Inst{23-8} = imm;
+}
+
 class BBCPUMemBinaryRegInstr<BBCPUOpcode opcode, Register src1, Register src2, string opcodestr, string argstr>
-    : BBCPUInstr<(outs mem:$imm), (ins), opcodestr, argstr, []> {
+    : BBCPUInstr<(outs mem:$imm), ins, opcodestr, argstr, []> {
   let Uses = [src1, src2, T];
 
   bits<16> imm;
@@ -358,6 +405,18 @@ class BBCPUMemBinaryRegInstr<BBCPUOpcode opcode, Register src1, Register src2, s
 
   let Opcode = opcode.Value;
   let Inst{23-8} = imm;
+}
+
+foreach reg = [A, B, TL, TH, T] in {
+  def AT_#reg : IndexedReg<reg>;
+}
+
+class BBCPUIndexedRegInstr<BBCPUOpcode opcode, IndexedReg dst, Register src, string opcodestr>
+  : BBCPUInstr<(outs dst:$dst), (ins), opcodestr, !strconcat("$dst, ", src.AsmName), []> {
+  IndexedReg dst;
+  let Uses = [src, T];
+
+  let Opcode = opcode.Value;
 }
 
 def NOP : BBCPUNoopInstr<OPC_NOP, "nop">;
