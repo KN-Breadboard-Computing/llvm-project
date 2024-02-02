@@ -39,186 +39,222 @@ class BBCPUOpcode<bits<8> val> {
     bits<8> Value = val;
 }
 
-def OPC_NOP : BBCPUOpcode<0b00000000>;
 def OPC_MOVAB : BBCPUOpcode<0b00000001>;
-def OPC_MOVBA : BBCPUOpcode<0b00000010>;
-def OPC_MOVAF : BBCPUOpcode<0b00000011>;
-def OPC_MOVBF : BBCPUOpcode<0b00000100>;
-def OPC_MOVATH : BBCPUOpcode<0b00000101>;
+def OPC_MOVATH : BBCPUOpcode<0b00000010>;
+def OPC_MOVATL : BBCPUOpcode<0b00000011>;
+def OPC_MOVAF : BBCPUOpcode<0b00000100>;
+def OPC_MOVBA : BBCPUOpcode<0b00000101>;
 def OPC_MOVBTH : BBCPUOpcode<0b00000110>;
-def OPC_MOVATL : BBCPUOpcode<0b00000111>;
-def OPC_MOVBTL : BBCPUOpcode<0b00001000>;
+def OPC_MOVBTL : BBCPUOpcode<0b00000111>;
+def OPC_MOVBF : BBCPUOpcode<0b00001000>;
 def OPC_MOVTHA : BBCPUOpcode<0b00001001>;
 def OPC_MOVTHB : BBCPUOpcode<0b00001010>;
-def OPC_MOVTLA : BBCPUOpcode<0b00001011>;
-def OPC_MOVTLB : BBCPUOpcode<0b00001100>;
-def OPC_MOVAIMM : BBCPUOpcode<0b00001101>;
-def OPC_MOVBIMM : BBCPUOpcode<0b00001110>;
-def OPC_MOVTHIMM : BBCPUOpcode<0b00001111>;
-def OPC_MOVTLIMM : BBCPUOpcode<0b00010000>;
-def OPC_MOVAABS : BBCPUOpcode<0b00010001>;
-def OPC_MOVAABSZP : BBCPUOpcode<0b0010010>;
-def OPC_MOVBABS : BBCPUOpcode<0b00010011>;
-def OPC_MOVBABSZP : BBCPUOpcode<0b00010100>;
-def OPC_MOVABSA : BBCPUOpcode<0b00010101>;
-def OPC_MOVABSAZP : BBCPUOpcode<0b00010110>;
-def OPC_MOVABSB : BBCPUOpcode<0b00010111>;
-def OPC_MOVABSBZP : BBCPUOpcode<0b00011000>;
-def OPC_MOVABSIMM : BBCPUOpcode<0b00011001>;
-def OPC_MOVABSIMMZP : BBCPUOpcode<0b00011010>;
-def OPC_MOVATTMPA : BBCPUOpcode<0b00011011>;
-def OPC_MOVATTMPB : BBCPUOpcode<0b00011100>;
-def OPC_MOVATAB : BBCPUOpcode<0b00011101>;
-def OPC_MOVATBA : BBCPUOpcode<0b00011110>;
-def OPC_MOVATTHA : BBCPUOpcode<0b00011111>;
-def OPC_MOVATTHB : BBCPUOpcode<0b00100000>;
-def OPC_MOVATTLA : BBCPUOpcode<0b00100001>;
-def OPC_MOVATTLB : BBCPUOpcode<0b00100010>;
-def OPC_MOVATTLTH : BBCPUOpcode<0b00100011>;
-def OPC_MOVATTHTL : BBCPUOpcode<0b00100100>;
-def OPC_MOVATTMPIMM : BBCPUOpcode<0b00100101>;
-def OPC_MOVATTMPHIMM : BBCPUOpcode<0b00100110>;
-def OPC_MOVATTMPLIMM : BBCPUOpcode<0b00100111>;
-def OPC_MOVATAIMM : BBCPUOpcode<0b00101000>;
-def OPC_MOVATBIMM : BBCPUOpcode<0b00101001>;
-def OPC_NEGAA : BBCPUOpcode<0b00101010>;
-def OPC_NEGAB : BBCPUOpcode<0b00101011>;
-def OPC_NEGAMEM : BBCPUOpcode<0b00101100>;
-def OPC_NEGAMEMZP : BBCPUOpcode<0b00101101>;
-def OPC_NEGASTC : BBCPUOpcode<0b00101110>;
-def OPC_NEGBA : BBCPUOpcode<0b00101111>;
-def OPC_NEGBB : BBCPUOpcode<0b00110000>;
-def OPC_NEGBMEM : BBCPUOpcode<0b00110001>;
-def OPC_NEGBMEMZP : BBCPUOpcode<0b00110010>;
-def OPC_NEGBSTC : BBCPUOpcode<0b0011011>;
-def OPC_ADDA : BBCPUOpcode<0b00110100>;
-def OPC_ADDB : BBCPUOpcode<0b00110101>;
-def OPC_ADDMEM : BBCPUOpcode<0b00110110>;
-def OPC_ADDMEMZP : BBCPUOpcode<0b00110111>;
-def OPC_ADDSTC : BBCPUOpcode<0b00111000>;
-def OPC_SUBABA : BBCPUOpcode<0b00111001>;
-def OPC_SUBABB : BBCPUOpcode<0b00111010>;
-def OPC_SUBABMEM : BBCPUOpcode<0b00111011>;
-def OPC_SUBABMEMZP : BBCPUOpcode<0b00111100>;
-def OPC_SUBABSTC : BBCPUOpcode<0b00111101>;
-def OPC_SUBBAA : BBCPUOpcode<0b00111110>;
-def OPC_SUBBAB : BBCPUOpcode<0b00111111>;
-def OPC_SUBBAMEM : BBCPUOpcode<0b01000000>;
-def OPC_SUBBAMEMZP : BBCPUOpcode<0b01000001>;
-def OPC_SUBBASTC : BBCPUOpcode<0b01000010>;
-def OPC_MULA2A : BBCPUOpcode<0b01000011>;
-def OPC_MULA2B : BBCPUOpcode<0b01000100>;
-def OPC_MULA2MEM : BBCPUOpcode<0b01000101>;
-def OPC_MULA2MEMZP : BBCPUOpcode<0b01000110>;
-def OPC_MULA2STC : BBCPUOpcode<0b01000111>;
-def OPC_MULB2A : BBCPUOpcode<0b01001000>;
-def OPC_MULB2B : BBCPUOpcode<0b01001001>;
-def OPC_MULB2MEM : BBCPUOpcode<0b01001010>;
-def OPC_MULB2MEMZP : BBCPUOpcode<0b01001011>;
-def OPC_MULB2STC : BBCPUOpcode<0b01001100>;
-def OPC_DIVA2A : BBCPUOpcode<0b01001101>;
-def OPC_DIVA2B : BBCPUOpcode<0b01001110>;
-def OPC_DIVA2MEM : BBCPUOpcode<0b01001111>;
-def OPC_DIVA2MEMZP : BBCPUOpcode<0b01010000>;
-def OPC_DIVA2STC : BBCPUOpcode<0b01010001>;
-def OPC_DIVB2A : BBCPUOpcode<0b01010010>;
-def OPC_DIVB2B : BBCPUOpcode<0b01010011>;
-def OPC_DIVB2MEM : BBCPUOpcode<0b01010100>;
-def OPC_DIVB2MEMZP : BBCPUOpcode<0b01010101>;
-def OPC_DIVB2STC : BBCPUOpcode<0b01010110>;
-def OPC_INVAA : BBCPUOpcode<0b01010111>;
-def OPC_INVAB : BBCPUOpcode<0b01011000>;
-def OPC_INVAMEM : BBCPUOpcode<0b01011001>;
-def OPC_INVAMEMZP : BBCPUOpcode<0b01011010>;
-def OPC_INVASTC : BBCPUOpcode<0b01011011>;
-def OPC_INVBA : BBCPUOpcode<0b01011100>;
-def OPC_INVBB : BBCPUOpcode<0b01011101>;
-def OPC_INVBMEM : BBCPUOpcode<0b01011110>;
-def OPC_INVBMEMZP : BBCPUOpcode<0b01011111>;
-def OPC_INVBSTC : BBCPUOpcode<0b01100000>;
-def OPC_ORA : BBCPUOpcode<0b01100001>;
-def OPC_ORB : BBCPUOpcode<0b01100010>;
-def OPC_ORMEM : BBCPUOpcode<0b01100011>;
-def OPC_ORMEMZP : BBCPUOpcode<0b01100100>;
-def OPC_ORSTC : BBCPUOpcode<0b01100101>;
-def OPC_ANDA : BBCPUOpcode<0b01100110>;
-def OPC_ANDB : BBCPUOpcode<0b01100111>;
-def OPC_ANDMEM : BBCPUOpcode<0b01101000>;
-def OPC_ANDMEMZP : BBCPUOpcode<0b01101001>;
-def OPC_ANDSTC : BBCPUOpcode<0b01101010>;
-def OPC_XORA : BBCPUOpcode<0b01101011>;
-def OPC_XORB : BBCPUOpcode<0b01101100>;
-def OPC_XORMEM : BBCPUOpcode<0b01101101>;
-def OPC_XORMEMZP : BBCPUOpcode<0b01101110>;
-def OPC_XORMEMSTC : BBCPUOpcode<0b01101111>;
-def OPC_SHRAA : BBCPUOpcode<0b01110000>;
-def OPC_SHRAB : BBCPUOpcode<0b01110001>;
-def OPC_SHRAMEM : BBCPUOpcode<0b01110010>;
-def OPC_SHRAMEMZP : BBCPUOpcode<0b01110011>;
-def OPC_SHRASTC : BBCPUOpcode<0b011101000>;
-def OPC_SHRBA : BBCPUOpcode<0b01110101>;
-def OPC_SHRBB : BBCPUOpcode<0b01110110>;
-def OPC_SHRBMEM : BBCPUOpcode<0b01110111>;
-def OPC_SHRMEMZP : BBCPUOpcode<0b01111000>;
-def OPC_SHRBSTC : BBCPUOpcode<0b01111001>;
-def OPC_SHLAA : BBCPUOpcode<0b01111010>;
-def OPC_SHLAB : BBCPUOpcode<0b01111011>;
-def OPC_SHLAMEM : BBCPUOpcode<0b01111100>;
-def OPC_SHLAMEMZP : BBCPUOpcode<0b01111101>;
-def OPC_SHLASTC : BBCPUOpcode<0b01111110>;
-def OPC_SHLBA : BBCPUOpcode<0b01111111>;
-def OPC_SHLBB : BBCPUOpcode<0b10000000>;
-def OPC_SHLBMEM : BBCPUOpcode<0b10000001>;
-def OPC_SHLBMEMZP : BBCPUOpcode<0b1000010>;
-def OPC_SHLBSTC : BBCPUOpcode<0b10000011>;
-def OPC_INCA : BBCPUOpcode<0b10001111>;
-def OPC_INCB : BBCPUOpcode<0b10010000>;
-def OPC_INCTMP : BBCPUOpcode<0b10010010>;
-def OPC_INCTH : BBCPUOpcode<0b10010010>;
-def OPC_INCTL : BBCPUOpcode<0b10010011>;
-def OPC_DECA : BBCPUOpcode<0b10010100>;
-def OPC_DECB : BBCPUOpcode<0b10010101>;
-def OPC_DECTMP : BBCPUOpcode<0b10010110>;
-def OPC_DECTH : BBCPUOpcode<0b10010111>;
-// OPC_CMPAB
-// OPC_CMPBA
-// OPC_CMPTHTL
-// OPC_CMPTTLTH
-// OPC_CMPATH
-// OPC_CMPTHA
-// OPC_CMPATL
-// OPC_CMPTLA
-// OPC_CMPBTH
-// OPC_CMPTHB
-// OPC_CMPBTL
-// OPC_CMPTLB
-// OPC_JMPIMM
-// OPC_JMPS
-// OPC_JMPNS
-// OPC_JMPP
-// OPC_JMPNP
-// OPC_JMPZ
-// OPC_JMPZ
-// OPC_JMPNZ
-// OPC_JMPC
-// OPC_JMPNC
-// OPC_JMPO
-// OPC_JMPNO
-// OPC_JMPFUN
-// OPC_JMPRET
-// OPC_PUSHA
-// OPC_PUSHB
-// OPC_PUSHTH
-// OPC_PUSHTL
-// OPC_PUSHIMM
-// OPC_PUSHABS
-// OPC_POPA
-// OPC_POPB
-// OPC_POPTH
-// OPC_POPTL
-// OPC_POPMEM
-// OPC_SKIP
-def OPC_HALT : BBCPUOpcode<0b11111111>;
+def OPC_MOVTHTL : BBCPUOpcode<0b00001011>;
+def OPC_MOVTHF : BBCPUOpcode<0b00001100>;
+def OPC_MOVTLA : BBCPUOpcode<0b00001101>;
+def OPC_MOVTLB : BBCPUOpcode<0b00001110>;
+def OPC_MOVTLTH : BBCPUOpcode<0b00001111>;
+def OPC_MOVTLF : BBCPUOpcode<0b00010000>;
+def OPC_MOVAIMM : BBCPUOpcode<0b00010001>;
+def OPC_MOVBIMM : BBCPUOpcode<0b00010010>;
+def OPC_MOVTHIMM : BBCPUOpcode<0b00010011>;
+def OPC_MOVTLIMM : BBCPUOpcode<0b00010100>;
+def OPC_MOVAABS : BBCPUOpcode<0b00010101>;
+def OPC_MOVAABSZP : BBCPUOpcode<0b00010110>;
+def OPC_MOVBABS : BBCPUOpcode<0b00010111>;
+def OPC_MOVBABSZP : BBCPUOpcode<0b00011000>;
+def OPC_MOVATABSA : BBCPUOpcode<0b00011001>;
+def OPC_MOVATABSAZP : BBCPUOpcode<0b00011010>;
+def OPC_MOVATABSB : BBCPUOpcode<0b00011011>;
+def OPC_MOVATABSBZP : BBCPUOpcode<0b00011100>;
+def OPC_MOVATABSIMM : BBCPUOpcode<0b00011101>;
+def OPC_MOVATABSIMMZP : BBCPUOpcode<0b00011110>;
+def OPC_MOVATTA : BBCPUOpcode<0b00011111>;
+def OPC_MOVATTB : BBCPUOpcode<0b00100000>;
+def OPC_MOVATAB : BBCPUOpcode<0b00100001>;
+def OPC_MOVATATH : BBCPUOpcode<0b00100010>;
+def OPC_MOVATATL : BBCPUOpcode<0b00100011>;
+def OPC_MOVATBA : BBCPUOpcode<0b00100100>;
+def OPC_MOVATBTH : BBCPUOpcode<0b00100101>;
+def OPC_MOVATBTL : BBCPUOpcode<0b00100110>;
+def OPC_MOVATTHA : BBCPUOpcode<0b00100111>;
+def OPC_MOVATTHB : BBCPUOpcode<0b00101000>;
+def OPC_MOVATTHTL : BBCPUOpcode<0b00101001>;
+def OPC_MOVATTLA : BBCPUOpcode<0b00101010>;
+def OPC_MOVATTLB : BBCPUOpcode<0b00101011>;
+def OPC_MOVATTLTH : BBCPUOpcode<0b00101100>;
+def OPC_MOVATTIMM : BBCPUOpcode<0b00101101>;
+def OPC_MOVATAIMM : BBCPUOpcode<0b00101110>;
+def OPC_MOVATBIMM : BBCPUOpcode<0b00101111>;
+def OPC_MOVATTHIMM : BBCPUOpcode<0b00110000>;
+def OPC_MOVATTLIMM : BBCPUOpcode<0b00110001>;
+def OPC_NEGAA : BBCPUOpcode<0b00110010>;
+def OPC_NEGAB : BBCPUOpcode<0b00110011>;
+def OPC_NEGBA : BBCPUOpcode<0b00110100>;
+def OPC_NEGBB : BBCPUOpcode<0b00110101>;
+def OPC_NEGMEMA : BBCPUOpcode<0b00110110>;
+def OPC_NEGMEMB : BBCPUOpcode<0b00110111>;
+def OPC_NEGMEMZPA : BBCPUOpcode<0b00111000>;
+def OPC_NEGMEMZPB : BBCPUOpcode<0b00111001>;
+def OPC_NEGSTCA : BBCPUOpcode<0b00111010>;
+def OPC_NEGSTCB : BBCPUOpcode<0b00111011>;
+def OPC_ADDA : BBCPUOpcode<0b00111100>;
+def OPC_ADDB : BBCPUOpcode<0b00111101>;
+def OPC_ADDMEM : BBCPUOpcode<0b00111110>;
+def OPC_ADDMEMZP : BBCPUOpcode<0b00111111>;
+def OPC_ADDSTC : BBCPUOpcode<0b01000000>;
+def OPC_SUBAAB : BBCPUOpcode<0b01000001>;
+def OPC_SUBABA : BBCPUOpcode<0b01000010>;
+def OPC_SUBBAB : BBCPUOpcode<0b01000011>;
+def OPC_SUBBBA : BBCPUOpcode<0b01000100>;
+def OPC_SUBMEMAB : BBCPUOpcode<0b01000101>;
+def OPC_SUBMEMBA : BBCPUOpcode<0b01000110>;
+def OPC_SUBMEMZPAB : BBCPUOpcode<0b01000111>;
+def OPC_SUBMEMZPBA : BBCPUOpcode<0b01001000>;
+def OPC_SUBSTCAB : BBCPUOpcode<0b01001001>;
+def OPC_SUBSTCBA : BBCPUOpcode<0b01001010>;
+def OPC_DIV2AA : BBCPUOpcode<0b01001011>;
+def OPC_DIV2AB : BBCPUOpcode<0b01001100>;
+def OPC_DIV2BA : BBCPUOpcode<0b01001101>;
+def OPC_DIV2BB : BBCPUOpcode<0b01001110>;
+def OPC_DIV2MEMA : BBCPUOpcode<0b01001111>;
+def OPC_DIV2MEMB : BBCPUOpcode<0b01010000>;
+def OPC_DIV2MEMZPA : BBCPUOpcode<0b01010001>;
+def OPC_DIV2MEMZPB : BBCPUOpcode<0b01010010>;
+def OPC_DIV2STCA : BBCPUOpcode<0b01010011>;
+def OPC_DIV2STCB : BBCPUOpcode<0b01010100>;
+def OPC_INVAA : BBCPUOpcode<0b01010101>;
+def OPC_INVAB : BBCPUOpcode<0b01010110>;
+def OPC_INVBA : BBCPUOpcode<0b01010111>;
+def OPC_INVBB : BBCPUOpcode<0b01011000>;
+def OPC_INVMEMA : BBCPUOpcode<0b01011001>;
+def OPC_INVMEMB : BBCPUOpcode<0b01011010>;
+def OPC_INVMEMZPA : BBCPUOpcode<0b01011011>;
+def OPC_INVMEMZPB : BBCPUOpcode<0b01011100>;
+def OPC_INVSTCA : BBCPUOpcode<0b01011101>;
+def OPC_INVSTCB : BBCPUOpcode<0b01011110>;
+def OPC_ORA : BBCPUOpcode<0b01011111>;
+def OPC_ORB : BBCPUOpcode<0b01100000>;
+def OPC_ORMEM : BBCPUOpcode<0b01100001>;
+def OPC_ORMEMZP : BBCPUOpcode<0b01100010>;
+def OPC_ORSTC : BBCPUOpcode<0b01100011>;
+def OPC_ANDA : BBCPUOpcode<0b01100100>;
+def OPC_ANDB : BBCPUOpcode<0b01100101>;
+def OPC_ANDMEM : BBCPUOpcode<0b01100110>;
+def OPC_ANDMEMZP : BBCPUOpcode<0b01100111>;
+def OPC_ANDSTC : BBCPUOpcode<0b01101000>;
+def OPC_XORA : BBCPUOpcode<0b01101001>;
+def OPC_XORB : BBCPUOpcode<0b01101010>;
+def OPC_XORMEM : BBCPUOpcode<0b01101011>;
+def OPC_XORMEMZP : BBCPUOpcode<0b01101100>;
+def OPC_XORSTC : BBCPUOpcode<0b01101101>;
+def OPC_SHRAA : BBCPUOpcode<0b01101110>;
+def OPC_SHRAB : BBCPUOpcode<0b01101111>;
+def OPC_SHRBA : BBCPUOpcode<0b01110000>;
+def OPC_SHRBB : BBCPUOpcode<0b01110001>;
+def OPC_SHRMEMA : BBCPUOpcode<0b01110010>;
+def OPC_SHRMEMB : BBCPUOpcode<0b01110011>;
+def OPC_SHRMEMZPA : BBCPUOpcode<0b01110100>;
+def OPC_SHRMEMZPB : BBCPUOpcode<0b01110101>;
+def OPC_SHRSTCA : BBCPUOpcode<0b01110110>;
+def OPC_SHRSTCB : BBCPUOpcode<0b01110111>;
+def OPC_SHLAA : BBCPUOpcode<0b01111000>;
+def OPC_SHLAB : BBCPUOpcode<0b01111001>;
+def OPC_SHLBA : BBCPUOpcode<0b01111010>;
+def OPC_SHLBB : BBCPUOpcode<0b01111011>;
+def OPC_SHLMEMA : BBCPUOpcode<0b01111100>;
+def OPC_SHLMEMB : BBCPUOpcode<0b01111101>;
+def OPC_SHLMEMZPA : BBCPUOpcode<0b01111110>;
+def OPC_SHLMEMZPB : BBCPUOpcode<0b01111111>;
+def OPC_SHLSTCA : BBCPUOpcode<0b10000000>;
+def OPC_SHLSTCB : BBCPUOpcode<0b10000001>;
+def OPC_CMPAB : BBCPUOpcode<0b10000010>;
+def OPC_CMPBA : BBCPUOpcode<0b10000011>;
+def OPC_CMPTHTL : BBCPUOpcode<0b10000100>;
+def OPC_CMPTLTH : BBCPUOpcode<0b10000101>;
+def OPC_CMPTHA : BBCPUOpcode<0b10000110>;
+def OPC_CMPATH : BBCPUOpcode<0b10000111>;
+def OPC_CMPTHB : BBCPUOpcode<0b10001000>;
+def OPC_CMPBTH : BBCPUOpcode<0b10001001>;
+def OPC_CMPTLA : BBCPUOpcode<0b10001010>;
+def OPC_CMPATL : BBCPUOpcode<0b10001011>;
+def OPC_CMPTLB : BBCPUOpcode<0b10001100>;
+def OPC_CMPBTL : BBCPUOpcode<0b10001101>;
+def OPC_CLRA : BBCPUOpcode<0b10001110>;
+def OPC_CLRB : BBCPUOpcode<0b10001111>;
+def OPC_CLRTH : BBCPUOpcode<0b10010000>;
+def OPC_CLRTL : BBCPUOpcode<0b10010001>;
+def OPC_CLRT : BBCPUOpcode<0b10010010>;
+def OPC_INCA : BBCPUOpcode<0b10010011>;
+def OPC_INCB : BBCPUOpcode<0b10010100>;
+def OPC_INCT : BBCPUOpcode<0b10010101>;
+def OPC_DECA : BBCPUOpcode<0b10010110>;
+def OPC_DECB : BBCPUOpcode<0b10010111>;
+def OPC_DECT : BBCPUOpcode<0b10011000>;
+def OPC_JMPIMM : BBCPUOpcode<0b10011001>;
+def OPC_JMPIMMS : BBCPUOpcode<0b10011010>;
+def OPC_JMPIMMNS : BBCPUOpcode<0b10011011>;
+def OPC_JMPIMMTS : BBCPUOpcode<0b10011100>;
+def OPC_JMPIMMTNS : BBCPUOpcode<0b10011101>;
+def OPC_JMPIMMP : BBCPUOpcode<0b10011110>;
+def OPC_JMPIMMNP : BBCPUOpcode<0b10011111>;
+def OPC_JMPIMMTP : BBCPUOpcode<0b10100000>;
+def OPC_JMPIMMTNP : BBCPUOpcode<0b10100001>;
+def OPC_JMPIMMZ : BBCPUOpcode<0b10100010>;
+def OPC_JMPIMMNZ : BBCPUOpcode<0b10100011>;
+def OPC_JMPIMMTZ : BBCPUOpcode<0b10100100>;
+def OPC_JMPIMMTNZ : BBCPUOpcode<0b10100101>;
+def OPC_JMPIMMC : BBCPUOpcode<0b10100110>;
+def OPC_JMPIMMNC : BBCPUOpcode<0b10100111>;
+def OPC_JMPIMMTC : BBCPUOpcode<0b10101000>;
+def OPC_JMPIMMTNC : BBCPUOpcode<0b10101001>;
+def OPC_JMPIMMO : BBCPUOpcode<0b10101010>;
+def OPC_JMPIMMNO : BBCPUOpcode<0b10101011>;
+def OPC_JMPIMMTO : BBCPUOpcode<0b10101100>;
+def OPC_JMPIMMTNO : BBCPUOpcode<0b10101101>;
+def OPC_JMPREL : BBCPUOpcode<0b10101110>;
+def OPC_JMPRELS : BBCPUOpcode<0b10101111>;
+def OPC_JMPRELNS : BBCPUOpcode<0b10110000>;
+def OPC_JMPRELTLS : BBCPUOpcode<0b10110001>;
+def OPC_JMPRELTLNS : BBCPUOpcode<0b10110010>;
+def OPC_JMPRELP : BBCPUOpcode<0b10110011>;
+def OPC_JMPRELNP : BBCPUOpcode<0b10110100>;
+def OPC_JMPRELTLP : BBCPUOpcode<0b10110101>;
+def OPC_JMPRELTLNP : BBCPUOpcode<0b10110110>;
+def OPC_JMPRELZ : BBCPUOpcode<0b10110111>;
+def OPC_JMPRELNZ : BBCPUOpcode<0b10111000>;
+def OPC_JMPRELTLZ : BBCPUOpcode<0b10111001>;
+def OPC_JMPRELTLNZ : BBCPUOpcode<0b10111010>;
+def OPC_JMPRELC : BBCPUOpcode<0b10111011>;
+def OPC_JMPRELNC : BBCPUOpcode<0b10111100>;
+def OPC_JMPRELTLC : BBCPUOpcode<0b10111101>;
+def OPC_JMPRELTLNC : BBCPUOpcode<0b10111110>;
+def OPC_JMPRELO : BBCPUOpcode<0b10111111>;
+def OPC_JMPRELNO : BBCPUOpcode<0b11000000>;
+def OPC_JMPRELTLO : BBCPUOpcode<0b11000001>;
+def OPC_JMPRELTLNO : BBCPUOpcode<0b11000010>;
+def OPC_JMPRELFUN : BBCPUOpcode<0b11000011>;
+def OPC_JMPRELRET : BBCPUOpcode<0b11000100>;
+def OPC_PUSHA : BBCPUOpcode<0b11000101>;
+def OPC_PUSHB : BBCPUOpcode<0b11000110>;
+def OPC_PUSHTH : BBCPUOpcode<0b11000111>;
+def OPC_PUSHTL : BBCPUOpcode<0b11001000>;
+def OPC_PUSHT : BBCPUOpcode<0b11001001>;
+def OPC_PUSHIMM : BBCPUOpcode<0b11001010>;
+def OPC_PUSHABS : BBCPUOpcode<0b11001011>;
+def OPC_PUSHABSZP : BBCPUOpcode<0b11001100>;
+def OPC_POPA : BBCPUOpcode<0b11001101>;
+def OPC_POPB : BBCPUOpcode<0b11001110>;
+def OPC_POPTH : BBCPUOpcode<0b11001111>;
+def OPC_POPTL : BBCPUOpcode<0b11010000>;
+def OPC_POPT : BBCPUOpcode<0b11010001>;
+def OPC_POPMEM : BBCPUOpcode<0b11010010>;
+def OPC_POPMEMZP : BBCPUOpcode<0b11010011>;
+def OPC_NOP : BBCPUOpcode<0b11010100>;
+def OPC_SKIP : BBCPUOpcode<0b11010101>;
+def OPC_SKIP1 : BBCPUOpcode<0b11010110>;
+def OPC_SKIP2 : BBCPUOpcode<0b11010111>;
+def OPC_HALT : BBCPUOpcode<0b11011000>;
 
 class BBCPUInstr<dag outs, dag ins, string opcodestr, string argstr, list<dag> pattern> : Instruction {
     let Namespace = "BBCPU";
@@ -240,6 +276,13 @@ class BBCPUNoopInstr<BBCPUOpcode opcode, string opcodestr>
   let Opcode = opcode.Value;
 }
 
+class BBCPURegInstr<BBCPUOpcode opcode, Register dst, dag ins, string opcodestr, string argstr>
+  : BBCPUInstr<(outs), ins, opcodestr, argstr, []> {
+  let Defs = [dst];
+
+  let Opcode = opcode.Value;
+}
+
 class BBCPUBinaryRegInstr<BBCPUOpcode opcode, Register dst, Register src, string opcodestr, string argstr>
     : BBCPUInstr<(outs), (ins), opcodestr, argstr, []> {
   let Defs = [dst];
@@ -249,7 +292,7 @@ class BBCPUBinaryRegInstr<BBCPUOpcode opcode, Register dst, Register src, string
 }
 
 class BBCPUTernaryRegInstr<BBCPUOpcode opcode, Register dst, Register src1, Register src2,
-  string opcodestr, string argstr> : BBCPUInstr<(outs), (ins), opcodestr, argstr, []> {
+  string opcodestr, string argstr, dag ins = (ins)> : BBCPUInstr<(outs), ins, opcodestr, argstr, []> {
   let Defs = [dst];
   let Uses = [src1, src2];
 
@@ -271,6 +314,18 @@ class BBCPURegImmInstr<BBCPUOpcode opcode, Register dst, string opcodestr, strin
 class BBCPURegMemInstr<BBCPUOpcode opcode, Register dst, string opcodestr, string argstr>
     : BBCPUInstr<(outs), (ins mem:$imm), opcodestr, argstr, []> {
   let Defs = [dst];
+  let Uses = [T];
+
+  bits<16> imm;
+
+  let Size = 3;
+
+  let Opcode = opcode.Value;
+  let Inst{23-8} = imm;
+}
+
+class BBCPUMemInstr<BBCPUOpcode opcode, dag ins, string opcodestr, string argstr>
+    : BBCPUInstr<(outs mem:$imm), ins, opcodestr, argstr, []> {
   let Uses = [T];
 
   bits<16> imm;
@@ -307,29 +362,49 @@ class BBCPUMemBinaryRegInstr<BBCPUOpcode opcode, Register src1, Register src2, s
 
 def NOP : BBCPUNoopInstr<OPC_NOP, "nop">;
 def MOVAB : BBCPUBinaryRegInstr<OPC_MOVAB, A, B, "mov", "a, b">;
-def MOVBA : BBCPUBinaryRegInstr<OPC_MOVBA, B, A, "mov", "b, a">;
-def MOVAF : BBCPUBinaryRegInstr<OPC_MOVAF, A, F, "mov", "a, f">;
-def MOVBF : BBCPUBinaryRegInstr<OPC_MOVBF, B, F, "mov", "b, f">;
 def MOVATH : BBCPUBinaryRegInstr<OPC_MOVATH, A, TH, "mov", "a, th">;
-def MOVBTH : BBCPUBinaryRegInstr<OPC_MOVBTH, B, TH, "mov", "b, th">;
 def MOVATL : BBCPUBinaryRegInstr<OPC_MOVATL, A, TL, "mov", "a, tl">;
+def MOVAF : BBCPUBinaryRegInstr<OPC_MOVAF, A, F, "mov", "a, f">;
+def MOVBA : BBCPUBinaryRegInstr<OPC_MOVBA, B, A, "mov", "b, a">;
+def MOVBTH : BBCPUBinaryRegInstr<OPC_MOVBTH, B, TH, "mov", "b, th">;
 def MOVBTL : BBCPUBinaryRegInstr<OPC_MOVBTL, B, TL, "mov", "b, tl">;
+def MOVBF : BBCPUBinaryRegInstr<OPC_MOVBF, B, F, "mov", "b, f">;
 def MOVTHA : BBCPUBinaryRegInstr<OPC_MOVTHA, TH, A, "mov", "th, a">;
 def MOVTHB : BBCPUBinaryRegInstr<OPC_MOVTHB, TH, B, "mov", "th, b">;
+def MOVTHTL : BBCPUBinaryRegInstr<OPC_MOVTHTL, TH, TL, "mov", "th, tl">;
+def MOVTHF : BBCPUBinaryRegInstr<OPC_MOVTHF, TH, F, "mov", "th, f">;
 def MOVTLA : BBCPUBinaryRegInstr<OPC_MOVTLA, TL, A, "mov", "tl, a">;
 def MOVTLB : BBCPUBinaryRegInstr<OPC_MOVTLB, TL, B, "mov", "tl, b">;
+def MOVTLTH : BBCPUBinaryRegInstr<OPC_MOVTLTH, TL, TH, "mov", "tl, th">;
+def MOVTLF : BBCPUBinaryRegInstr<OPC_MOVTLF, TL, F, "mov", "tl, f">;
 def MOVAIMM : BBCPURegImmInstr<OPC_MOVAIMM, A, "mov", "a, $imm">;
 def MOVBIMM : BBCPURegImmInstr<OPC_MOVBIMM, B, "mov", "b, $imm">;
+def MOVTHIMM : BBCPURegImmInstr<OPC_MOVTHIMM, TH, "mov", "th, $imm">;
+def MOVTLIMM : BBCPURegImmInstr<OPC_MOVTLIMM, TL, "mov", "tl, $imm">;
 def MOVAABS : BBCPURegMemInstr<OPC_MOVAABS, A, "mov", "a, $imm">;
 def MOVBABS : BBCPURegMemInstr<OPC_MOVBABS, B, "mov", "b, $imm">;
-def MOVABSA : BBCPUMemRegInstr<OPC_MOVABSA, A, "mov", "$imm, a">;
-def MOVABSB : BBCPUMemRegInstr<OPC_MOVABSB, B, "mov", "$imm, b">;
-def MOVABSIMM : BBCPUInstr<(outs mem:$dst), (ins imm8:$src), "mov", "$dst, $src", []> {
+def MOVBABSZP : BBCPURegMemZPInstr<OPC_MOVBABS, B, "mov", "b, $imm">;
+def MOVATABSA : BBCPUMemRegInstr<OPC_MOVATABSA, A, "mov", "$imm, a">;
+def MOVATABSB : BBCPUMemRegInstr<OPC_MOVATABSB, B, "mov", "$imm, b">;
+
+def MOVATABSIMM : BBCPUInstr<(outs mem:$dst), (ins imm8:$src), "mov", "$dst, $src", []> {
   bits<8> src;
   bits<16> dst;
 
   let Size = 4;
-  let Opcode = OPC_MOVABSIMM.Value;
+  let Opcode = OPC_MOVATABSIMM.Value;
+  let Uses = [T];
+
+  let Inst{23-8} = dst;
+  let Inst{31-24} = src;
+}
+
+def MOVATABSIMMZP : BBCPUInstr<(outs memzp:$dst), (ins imm8:$src), "mov", "$dst, $src", []> {
+  bits<8> src;
+  bits<16> dst;
+
+  let Size = 4;
+  let Opcode = OPC_MOVATABSIMMZP.Value;
   let Uses = [T];
 
   let Inst{23-8} = dst;
@@ -337,62 +412,54 @@ def MOVABSIMM : BBCPUInstr<(outs mem:$dst), (ins imm8:$src), "mov", "$dst, $src"
 }
 
 def NEGAA : BBCPUBinaryRegInstr<OPC_NEGAA, A, A, "neg", "a, a">;
-def NEGAB : BBCPUBinaryRegInstr<OPC_NEGAB, B, A, "neg", "b, a">;
-def NEGAMEM : BBCPUMemRegInstr<OPC_NEGAMEM, A, "neg", "$imm, a">;
-def NEGBA : BBCPUBinaryRegInstr<OPC_NEGBA, A, B, "neg", "a, b">;
+def NEGBA : BBCPUBinaryRegInstr<OPC_NEGBA, B, A, "neg", "b, a">;
+def NEGMEMA : BBCPUMemRegInstr<OPC_NEGMEMA, A, "neg", "$imm, a">;
+def NEGAB : BBCPUBinaryRegInstr<OPC_NEGAB, A, B, "neg", "a, b">;
 def NEGBB : BBCPUBinaryRegInstr<OPC_NEGBB, B, B, "neg", "b, b">;
-def NEGBMEM : BBCPUMemRegInstr<OPC_NEGBMEM, B, "neg", "$imm, b">;
-// TODO: Maybe operands here should be swappable with each other for ADDA, ADDB
-def ADDA : BBCPUTernaryRegInstr<OPC_ADDA, A, A, B, "add", "a, a, b">;
-def ADDB : BBCPUTernaryRegInstr<OPC_ADDB, B, A, B, "add", "b, a, b">;
-def ADDMEM : BBCPUMemBinaryRegInstr<OPC_ADDMEM, A, B, "add", "$imm, a, b">;
-def SUBABA : BBCPUTernaryRegInstr<OPC_SUBABA, A, A, B, "sub", "a, a, b">;
-def SUBABB : BBCPUTernaryRegInstr<OPC_SUBABB, B, A, B, "sub", "b, a, b">;
-def SUBABMEM : BBCPUMemBinaryRegInstr<OPC_SUBABMEM, A, B, "sub", "$imm, a, b">;
-def SUBBAA : BBCPUTernaryRegInstr<OPC_SUBBAA, A, B, A, "sub", "a, b, a">;
-def SUBBAB : BBCPUTernaryRegInstr<OPC_SUBBAB, B, B, A, "sub", "b, b, a">;
-def SUBBAMEM : BBCPUMemBinaryRegInstr<OPC_SUBBAMEM, B, A, "sub", "$imm, b, a">;
-def MULA2A : BBCPUBinaryRegInstr<OPC_MULA2A, A, A, "mul2", "a, a">;
-def MULA2B : BBCPUBinaryRegInstr<OPC_MULA2B, B, A, "mul2", "b, a">;
-def MULA2MEM : BBCPUMemRegInstr<OPC_MULA2MEM, A, "mul2", "$imm, a">;
-def MULB2A : BBCPUBinaryRegInstr<OPC_MULB2A, A, B, "mul2", "a, b">;
-def MULB2B : BBCPUBinaryRegInstr<OPC_MULB2B, B, B, "mul2", "b, b">;
-def MULB2MEM : BBCPUMemRegInstr<OPC_MULB2MEM, B, "mul2", "$imm, b">;
-def DIVA2A : BBCPUBinaryRegInstr<OPC_DIVA2A, A, A, "div2", "a, a">;
-def DIVA2B : BBCPUBinaryRegInstr<OPC_DIVA2B, B, A, "div2", "b, a">;
-def DIVA2MEM : BBCPUMemRegInstr<OPC_DIVA2MEM, A, "div2", "$imm, a">;
-def DIVB2A : BBCPUBinaryRegInstr<OPC_DIVB2A, A, B, "div2", "a, b">;
-def DIVB2B : BBCPUBinaryRegInstr<OPC_DIVB2B, B, B, "div2", "b, b">;
-def DIVB2MEM : BBCPUMemRegInstr<OPC_DIVB2MEM, B, "div2", "$imm, b">;
+def NEGMEMB : BBCPUMemRegInstr<OPC_NEGMEMB, B, "neg", "$imm, b">;
+def ADDA : BBCPURegInstr<OPC_ADDA, A, (ins GPR:$src1, GPR:$src2), "add", "a, $src1, $src2">;
+def ADDB : BBCPURegInstr<OPC_ADDB, B, (ins GPR:$src1, GPR:$src2), "add", "b, $src1, $src2">;
+def ADDMEM : BBCPUMemInstr<OPC_ADDMEM, (ins GPR:$src1, GPR:$src2), "add", "$imm, $src1, $src2">;
+def SUBAAB : BBCPUTernaryRegInstr<OPC_SUBAAB, A, A, B, "sub", "a, a, b">;
+def SUBBAB : BBCPUTernaryRegInstr<OPC_SUBBAB, B, A, B, "sub", "b, a, b">;
+def SUBMEMAB : BBCPUMemBinaryRegInstr<OPC_SUBMEMAB, A, B, "sub", "$imm, a, b">;
+def SUBABA : BBCPUTernaryRegInstr<OPC_SUBABA, A, B, A, "sub", "a, b, a">;
+def SUBBBA : BBCPUTernaryRegInstr<OPC_SUBBBA, B, B, A, "sub", "b, b, a">;
+def SUBMEMBA : BBCPUMemBinaryRegInstr<OPC_SUBMEMBA, B, A, "sub", "$imm, b, a">;
+def DIV2AA : BBCPUBinaryRegInstr<OPC_DIV2AA, A, A, "div2", "a, a">;
+def DIV2BA : BBCPUBinaryRegInstr<OPC_DIV2AB, B, A, "div2", "b, a">;
+def DIV2MEMA : BBCPUMemRegInstr<OPC_DIV2MEMA, A, "div2", "$imm, a">;
+def DIV2AB : BBCPUBinaryRegInstr<OPC_DIV2AB, A, B, "div2", "a, b">;
+def DIV2BB : BBCPUBinaryRegInstr<OPC_DIV2BB, B, B, "div2", "b, b">;
+def DIV2MEMB : BBCPUMemRegInstr<OPC_DIV2MEMB, B, "div2", "$imm, b">;
 def INVAA : BBCPUBinaryRegInstr<OPC_INVAA, A, A, "inv", "a, a">;
-def INVAB : BBCPUBinaryRegInstr<OPC_INVAB, B, A, "inv", "b, a">;
-def INVAMEM : BBCPUMemRegInstr<OPC_INVAMEM, A, "inv", "$imm, a">;
-def INVBA : BBCPUBinaryRegInstr<OPC_INVBA, A, B, "inv", "a, b">;
+def INVBA : BBCPUBinaryRegInstr<OPC_INVBA, B, A, "inv", "b, a">;
+def INVMEMA : BBCPUMemRegInstr<OPC_INVMEMA, A, "inv", "$imm, a">;
+def INVAB : BBCPUBinaryRegInstr<OPC_INVAB, A, B, "inv", "a, b">;
 def INVBB : BBCPUBinaryRegInstr<OPC_INVBB, B, B, "inv", "b, b">;
-def INVBMEM : BBCPUMemRegInstr<OPC_INVBMEM, B, "inv", "$imm, b">;
+def INVMEMB : BBCPUMemRegInstr<OPC_INVMEMB, B, "inv", "$imm, b">;
 // TODO: Maybe operands here should be swappable with each other for Boolean operations
-def ORA : BBCPUTernaryRegInstr<OPC_ORA, A, A, B, "or", "a, a, b">;
-def ORB : BBCPUTernaryRegInstr<OPC_ORB, B, A, B, "or", "b, a, b">;
-def ORMEM : BBCPUMemBinaryRegInstr<OPC_ORMEM, A, B, "or", "$imm, a, b">;
-def ANDA : BBCPUTernaryRegInstr<OPC_ANDA, A, A, B, "and", "a, a, b">;
-def ANDB : BBCPUTernaryRegInstr<OPC_ANDB, B, A, B, "and", "b, a, b">;
-def ANDMEM : BBCPUMemBinaryRegInstr<OPC_ANDMEM, A, B, "and", "$imm, a, b">;
+def ORA : BBCPURegInstr<OPC_ORA, A, (ins GPR:$src1, GPR:$src2), "or", "a, $src1, $src2">;
+def ORB : BBCPURegInstr<OPC_ORB, B, (ins GPR:$src1, GPR:$src2), "or", "b, $src1, $src2">;
+def ORMEM : BBCPUMemInstr<OPC_ORMEM, (ins GPR:$src1, GPR:$src2), "or", "$imm, $src1, $src2">;
+def ANDA : BBCPURegInstr<OPC_ANDA, A, (ins GPR:$src1, GPR:$src2), "and", "a, $src1, $src2">;
+def ANDB : BBCPURegInstr<OPC_ANDB, B, (ins GPR:$src1, GPR:$src2), "and", "b, a, b">;
+def ANDMEM : BBCPUMemInstr<OPC_ANDMEM, (ins GPR:$src1, GPR:$src2), "and", "$imm, a, b">;
 def XORA : BBCPUTernaryRegInstr<OPC_XORA, A, A, B, "xor", "a, a, b">;
 def XORB : BBCPUTernaryRegInstr<OPC_XORB, B, A, B, "xor", "b, a, b">;
 def XORMEM : BBCPUMemBinaryRegInstr<OPC_XORMEM, A, B, "xor", "$imm, a, b">;
 def SHRAA : BBCPUBinaryRegInstr<OPC_SHRAA, A, A, "shr", "a, a">;
-def SHRAB : BBCPUBinaryRegInstr<OPC_SHRAB, B, A, "shr", "b, a">;
-def SHRAMEM : BBCPUMemRegInstr<OPC_SHRAMEM, A, "shr", "$imm, a">;
-def SHRBA : BBCPUBinaryRegInstr<OPC_SHRBA, A, B, "shr", "a, b">;
+def SHRBA : BBCPUBinaryRegInstr<OPC_SHRBA, B, A, "shr", "b, a">;
+def SHRMEMA : BBCPUMemRegInstr<OPC_SHRMEMA, A, "shr", "$imm, a">;
+def SHRAB : BBCPUBinaryRegInstr<OPC_SHRAB, A, B, "shr", "a, b">;
 def SHRBB : BBCPUBinaryRegInstr<OPC_SHRBB, B, B, "shr", "b, b">;
-def SHRBMEM : BBCPUMemRegInstr<OPC_SHRBMEM, B, "shr", "$imm, b">;
+def SHRMEMB : BBCPUMemRegInstr<OPC_SHRMEMB, B, "shr", "$imm, b">;
 def SHLAA : BBCPUBinaryRegInstr<OPC_SHLAA, A, A, "shl", "a, a">;
-def SHLAB : BBCPUBinaryRegInstr<OPC_SHLAB, B, A, "shl", "b, a">;
-def SHLAMEM : BBCPUMemRegInstr<OPC_SHLAMEM, A, "shl", "$imm, a">;
-def SHLBA : BBCPUBinaryRegInstr<OPC_SHLBA, A, B, "shl", "a, b">;
+def SHLBA : BBCPUBinaryRegInstr<OPC_SHLBA, B, A, "shl", "b, a">;
+def SHLMEMA : BBCPUMemRegInstr<OPC_SHLMEMA, A, "shl", "$imm, a">;
+def SHLAB : BBCPUBinaryRegInstr<OPC_SHLAB, A, B, "shl", "a, b">;
 def SHLBB : BBCPUBinaryRegInstr<OPC_SHLBB, B, B, "shl", "b, b">;
-def SHLBMEM : BBCPUMemRegInstr<OPC_SHLBMEM, B, "shl", "$imm, b">;
-
+def SHLMEMB : BBCPUMemRegInstr<OPC_SHLMEMB, B, "shl", "$imm, b">;
 
 
 def HALT : BBCPUNoopInstr<OPC_HALT, "halt">;
