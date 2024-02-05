@@ -26,6 +26,10 @@ def IndexedRegOperandClass : AsmOperandClass {
   let Name = "IndexedReg";
 }
 
+def StackOperandClass : AsmOperandClass {
+  let Name = "Stack";
+}
+
 def imm8 : Operand<i8> {
     let EncoderMethod = "encodeImm<MCFixupKind::FK_Data_1, 1>";
 }
@@ -49,6 +53,12 @@ class IndexedReg<Register reg> : Operand<OtherVT> {
 
   let OperandType = "OPERAND_REGISTER";
   let ParserMatchClass = IndexedRegOperandClass;
+}
+
+def stc : Operand<i8> {
+  let ParserMatchClass = StackOperandClass;
+  let OperandType = "OPERAND_MEMORY";
+  let MIOperandInfo = (ops i8imm);
 }
 
 //===----------------------------------------------------------------------===//
@@ -438,6 +448,13 @@ class BBCPUIndexedImmInstr<BBCPUOpcode opcode, IndexedReg dst, string opcodestr>
   let Size = 2;
   let Opcode = opcode.Value;
   let Inst{15-8} = imm;
+}
+
+class BBCPUStcRegInstr<BBCPUOpcode opcode, Register src, string opcodestr>
+  : BBCPUInstr<(outs stc:$dst), (ins), opcodestr, !strconcat("$dst, ", src.AsmName), []> {
+  let Uses = [src];
+
+  let Opcode = opcode.Value;
 }
 
 def NOP : BBCPUNoopInstr<OPC_NOP, "nop">;

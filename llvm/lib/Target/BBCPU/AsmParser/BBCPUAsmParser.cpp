@@ -70,7 +70,8 @@ class BBCPUOperand : public MCParsedAsmOperand {
     Memory,
     Token,
     MemZeroPage,
-    IndexedReg
+    IndexedReg,
+    Stack
   } Kind;
 
   struct RegisterMemImm {
@@ -95,6 +96,9 @@ public:
 
   BBCPUOperand(StringRef Tok, const SMLoc &Loc)
       : Kind(Token), Tok(Tok), Start(Loc), End(Loc) {}
+
+  BBCPUOperand(KindTy Kind, const SMLoc &Loc)
+      : Kind(Kind), Start(Loc), End(Loc) {}
 
   static std::unique_ptr<MCParsedAsmOperand>
   createImm(const MCExpr *Imm, const SMLoc &Start, const SMLoc &End) {
@@ -125,6 +129,10 @@ public:
     return std::make_unique<BBCPUOperand>(Tok, Loc);
   }
 
+  static std::unique_ptr<MCParsedAsmOperand> createStack(const SMLoc& Loc) {
+    return std::make_unique<BBCPUOperand>(Stack, Loc);
+  }
+
   bool isToken() const override { return Kind == Token; }
   bool isImm() const override { return Kind == Immediate; }
   bool isReg() const override { return Kind == Register; }
@@ -134,6 +142,7 @@ public:
   template<int Reg> bool isIndexedRegOf() {
     return isIndexedReg() && RegMemImm.Reg == Reg;
   }
+  bool isStack() const { return Kind == Stack; };
 
   const MCExpr *getExpr() const {
     assert((Kind == Immediate || Kind == Memory || Kind == MemZeroPage) && "Unexpected operand kind");
@@ -180,6 +189,9 @@ public:
     case IndexedReg:
       OS << "IndexedReg: " << getReg();
       break;
+    case Stack:
+      OS << "Stack";
+      break;
     }
   }
 
@@ -221,6 +233,13 @@ public:
     assert(Kind == IndexedReg && "Unexpected operand kind");
     assert(N == 1 && "Invalid number of operands");
     addRegLikeOperands(Inst, N);
+  }
+
+  void addStackOperands(MCInst &Inst, unsigned N) {
+    assert(Kind == Stack && "Unexpected operand kind");
+    assert(N == 1 && "Invalid number of operands");
+    // add a dummy operand, so that number of operands checks out
+    Inst.addOperand(MCOperand::createImm(0));
   }
 
 private:
@@ -453,6 +472,24 @@ bool BBCPUAsmParser::parseOperand(OperandVector &Operands) {
 
     End = getLexer().getLoc();
     return Error(Start, "expected register or memory", SMRange(Start, End));
+  }
+
+  if (getLexer().is(AsmToken::Less)) {
+    Lex();
+
+    AsmToken Tok = getTok();
+    StringRef S;
+    if (getParser().parseIdentifier(S))
+      return true;
+
+    if (!S.equals("stack"))
+      return Error(Tok.getLoc(), "expected `stack`", Tok.getLocRange());
+
+    if (parseToken(AsmToken::Greater, "expected closing `<`"))
+      return true;
+
+    Operands.push_back(BBCPUOperand::createStack(Tok.getLoc()));
+    return false;
   }
 
   if (!parseRegister(Reg, Start, End)) {
