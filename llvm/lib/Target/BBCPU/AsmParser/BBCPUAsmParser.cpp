@@ -131,6 +131,9 @@ public:
   bool isMem() const override { return Kind == Memory; }
   bool isMemZeroPage() const { return Kind == MemZeroPage; }
   bool isIndexedReg() const { return Kind == IndexedReg; }
+  template<int Reg> bool isIndexedRegOf() {
+    return isIndexedReg() && RegMemImm.Reg == Reg;
+  }
 
   const MCExpr *getExpr() const {
     assert((Kind == Immediate || Kind == Memory || Kind == MemZeroPage) && "Unexpected operand kind");
@@ -184,7 +187,7 @@ public:
     assert(Kind == Register && "Unexpected operand kind");
     assert(N == 1 && "Invalid number of operands");
 
-    Inst.addOperand(MCOperand::createReg(getReg()));
+    addRegLikeOperands(Inst, N);
   }
 
   void addImmOperands(MCInst &Inst, unsigned N) const {
@@ -217,7 +220,7 @@ public:
   void addIndexedRegOperands(MCInst &Inst, unsigned N) const {
     assert(Kind == IndexedReg && "Unexpected operand kind");
     assert(N == 1 && "Invalid number of operands");
-    // do nothing, indexed reg destination is already encoded in the opcode
+    addRegLikeOperands(Inst, N);
   }
 
 private:
@@ -232,6 +235,13 @@ private:
       Inst.addOperand(MCOperand::createImm(CE->getValue()));
     else
       Inst.addOperand(MCOperand::createExpr(Expr));
+  }
+
+  void addRegLikeOperands(MCInst& Inst, unsigned N) const {
+    assert((Kind == IndexedReg || Kind == Register) && "Unexpected operand kind");
+    assert(N == 1 && "Invalid number of operands");
+
+    Inst.addOperand(MCOperand::createReg(getReg()));
   }
 };
 

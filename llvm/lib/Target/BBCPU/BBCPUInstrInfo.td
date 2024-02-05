@@ -314,7 +314,7 @@ class BBCPUBinaryRegInstr<BBCPUOpcode opcode, Register dst, Register src, string
 }
 
 class BBCPUTernaryRegInstr<BBCPUOpcode opcode, Register dst, Register src1, Register src2,
-  string opcodestr, string argstr> : BBCPUInstr<(outs), ins, opcodestr, argstr, []> {
+  string opcodestr, string argstr> : BBCPUInstr<(outs), (ins), opcodestr, argstr, []> {
   let Defs = [dst];
   let Uses = [src1, src2];
 
@@ -387,16 +387,16 @@ class BBCPUMemZPRegInstr<BBCPUOpcode opcode, Register src, string opcodestr, str
     : BBCPUInstr<(outs memzp:$imm), (ins), opcodestr, argstr, []> {
   let Uses = [src, T];
 
-  bits<16> imm;
+  bits<8> imm;
 
-  let Size = 3;
+  let Size = 2;
 
   let Opcode = opcode.Value;
-  let Inst{23-8} = imm;
+  let Inst{15-8} = imm;
 }
 
 class BBCPUMemBinaryRegInstr<BBCPUOpcode opcode, Register src1, Register src2, string opcodestr, string argstr>
-    : BBCPUInstr<(outs mem:$imm), ins, opcodestr, argstr, []> {
+    : BBCPUInstr<(outs mem:$imm), (ins), opcodestr, argstr, []> {
   let Uses = [src1, src2, T];
 
   bits<16> imm;
@@ -408,7 +408,16 @@ class BBCPUMemBinaryRegInstr<BBCPUOpcode opcode, Register src1, Register src2, s
 }
 
 foreach reg = [A, B, TL, TH, T] in {
-  def AT_#reg : IndexedReg<reg>;
+  def Indexed#reg#RegOpClass : AsmOperandClass {
+    let Name = !strconcat("Indexed", reg.AsmName, "Reg");
+    let RenderMethod = "addIndexedRegOperands";
+    let PredicateMethod = "isIndexedRegOf<BBCPU::" # reg # ">";
+    let SuperClasses = [IndexedRegOperandClass];
+  }
+
+  def AT_#reg : IndexedReg<reg> {
+    let ParserMatchClass = !cast<AsmOperandClass>("Indexed" # reg # "RegOpClass");
+  }
 }
 
 class BBCPUIndexedRegInstr<BBCPUOpcode opcode, IndexedReg dst, Register src, string opcodestr>
@@ -417,6 +426,18 @@ class BBCPUIndexedRegInstr<BBCPUOpcode opcode, IndexedReg dst, Register src, str
   let Uses = [src, T];
 
   let Opcode = opcode.Value;
+}
+
+class BBCPUIndexedImmInstr<BBCPUOpcode opcode, IndexedReg dst, string opcodestr>
+  : BBCPUInstr<(outs dst:$dst), (ins imm8:$imm), opcodestr, "$dst, $imm", []> {
+  IndexedReg dst;
+  bits<8> imm;
+
+  let Uses = [T];
+
+  let Size = 2;
+  let Opcode = opcode.Value;
+  let Inst{15-8} = imm;
 }
 
 def NOP : BBCPUNoopInstr<OPC_NOP, "nop">;
@@ -441,10 +462,13 @@ def MOVBIMM : BBCPURegImmInstr<OPC_MOVBIMM, B, "mov", "b, $imm">;
 def MOVTHIMM : BBCPURegImmInstr<OPC_MOVTHIMM, TH, "mov", "th, $imm">;
 def MOVTLIMM : BBCPURegImmInstr<OPC_MOVTLIMM, TL, "mov", "tl, $imm">;
 def MOVAABS : BBCPURegMemInstr<OPC_MOVAABS, A, "mov", "a, $imm">;
+def MOVAABSZP : BBCPURegMemZPInstr<OPC_MOVAABSZP, A, "mov", "a, $imm">;
 def MOVBABS : BBCPURegMemInstr<OPC_MOVBABS, B, "mov", "b, $imm">;
-def MOVBABSZP : BBCPURegMemZPInstr<OPC_MOVBABS, B, "mov", "b, $imm">;
+def MOVBABSZP : BBCPURegMemZPInstr<OPC_MOVBABSZP, B, "mov", "b, $imm">;
 def MOVATABSA : BBCPUMemRegInstr<OPC_MOVATABSA, A, "mov", "$imm, a">;
+def MOVATABSAZP : BBCPUMemZPRegInstr<OPC_MOVATABSAZP, A, "mov", "$imm, a">;
 def MOVATABSB : BBCPUMemRegInstr<OPC_MOVATABSB, B, "mov", "$imm, b">;
+def MOVATABSBZP : BBCPUMemZPRegInstr<OPC_MOVATABSBZP, B, "mov", "$imm, b">;
 
 def MOVATABSIMM : BBCPUInstr<(outs mem:$dst), (ins imm8:$src), "mov", "$dst, $src", []> {
   bits<8> src;
@@ -470,6 +494,25 @@ def MOVATABSIMMZP : BBCPUInstr<(outs memzp:$dst), (ins imm8:$src), "mov", "$dst,
   let Inst{31-24} = src;
 }
 
+def MOVATTA : BBCPUIndexedRegInstr<OPC_MOVATTA, AT_T, A, "mov">;
+def MOVATTB : BBCPUIndexedRegInstr<OPC_MOVATTB, AT_T, B, "mov">;
+def MOVATAB : BBCPUIndexedRegInstr<OPC_MOVATAB, AT_A, B, "mov">;
+def MOVATATH : BBCPUIndexedRegInstr<OPC_MOVATATH, AT_A, TH, "mov">;
+def MOVATATL : BBCPUIndexedRegInstr<OPC_MOVATATL, AT_A, TL, "mov">;
+def MOVATBA : BBCPUIndexedRegInstr<OPC_MOVATBA, AT_B, A, "mov">;
+def MOVATBTH : BBCPUIndexedRegInstr<OPC_MOVATBTH, AT_B, TH, "mov">;
+def MOVATBTL : BBCPUIndexedRegInstr<OPC_MOVATBTL, AT_B, TL, "mov">;
+def MOVATTHA : BBCPUIndexedRegInstr<OPC_MOVATTHA, AT_TH, A, "mov">;
+def MOVATTHB : BBCPUIndexedRegInstr<OPC_MOVATTHB, AT_TH, B, "mov">;
+def MOVATTHTL : BBCPUIndexedRegInstr<OPC_MOVATTHTL, AT_TH, TL, "mov">;
+def MOVATTLA : BBCPUIndexedRegInstr<OPC_MOVATTLA, AT_TL, A, "mov">;
+def MOVATTLB : BBCPUIndexedRegInstr<OPC_MOVATTLB, AT_TL, B, "mov">;
+def MOVATTLTH : BBCPUIndexedRegInstr<OPC_MOVATTLTH, AT_TL, TH, "mov">;
+def MOVATTIMM : BBCPUIndexedImmInstr<OPC_MOVATTIMM, AT_T, "mov">;
+def MOVATAIMM : BBCPUIndexedImmInstr<OPC_MOVATAIMM, AT_A, "mov">;
+def MOVATBIMM : BBCPUIndexedImmInstr<OPC_MOVATBIMM, AT_B, "mov">;
+def MOVATTHIMM : BBCPUIndexedImmInstr<OPC_MOVATTHIMM, AT_TH, "mov">;
+def MOVATTLIMM : BBCPUIndexedImmInstr<OPC_MOVATTLIMM, AT_TL, "mov">;
 def NEGAA : BBCPUBinaryRegInstr<OPC_NEGAA, A, A, "neg", "a, a">;
 def NEGBA : BBCPUBinaryRegInstr<OPC_NEGBA, B, A, "neg", "b, a">;
 def NEGMEMA : BBCPUMemRegInstr<OPC_NEGMEMA, A, "neg", "$imm, a">;
