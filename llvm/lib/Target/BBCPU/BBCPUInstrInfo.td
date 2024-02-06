@@ -323,6 +323,20 @@ class BBCPURegInstr<BBCPUOpcode opcode, Register dst, dag ins, string opcodestr,
   let Opcode = opcode.Value;
 }
 
+class BBCPUSRegInstr<BBCPUOpcode opcode, Register src, string opcodestr>
+    : BBCPUInstr<(outs), (ins), opcodestr, src.AsmName, []> {
+  let Uses = [src];
+
+  let Opcode = opcode.Value;
+}
+
+class BBCPUDRegInstr<BBCPUOpcode opcode, Register dst, string opcodestr>
+    : BBCPUInstr<(outs), (ins), opcodestr, dst.AsmName, []> {
+  let Defs = [dst];
+
+  let Opcode = opcode.Value;
+}
+
 class BBCPUBinaryRegInstr<BBCPUOpcode opcode, Register dst, Register src, string opcodestr, string argstr>
     : BBCPUInstr<(outs), (ins), opcodestr, argstr, []> {
   let Defs = [dst];
@@ -374,6 +388,42 @@ class BBCPUMemInstr<BBCPUOpcode opcode, dag ins, string opcodestr, string argstr
 
   let Opcode = opcode.Value;
   let Inst{23-8} = imm;
+}
+
+class BBCPUDMemZPInstr<BBCPUOpcode opcode, string opcodestr>
+    : BBCPUInstr<(outs memzp:$imm), (ins), opcodestr, "$imm", []> {
+  let Uses = [T];
+
+  bits<8> imm;
+
+  let Size = 2;
+
+  let Opcode = opcode.Value;
+  let Inst{15-8} = imm;
+}
+
+class BBCPUSMemInstr<BBCPUOpcode opcode, string opcodestr>
+    : BBCPUInstr<(outs), (ins mem:$imm), opcodestr, "$imm", []> {
+  let Uses = [T];
+
+  bits<16> imm;
+
+  let Size = 3;
+
+  let Opcode = opcode.Value;
+  let Inst{23-8} = imm;
+}
+
+class BBCPUSMemZPInstr<BBCPUOpcode opcode, string opcodestr>
+    : BBCPUInstr<(outs), (ins memzp:$imm), opcodestr, "$imm", []> {
+  let Uses = [T];
+
+  bits<8> imm;
+
+  let Size = 2;
+
+  let Opcode = opcode.Value;
+  let Inst{15-8} = imm;
 }
 
 class BBCPURegMemZPInstr<BBCPUOpcode opcode, Register dst, string opcodestr, string argstr>
@@ -493,6 +543,15 @@ class BBCPURelJmpRegInstr<BBCPUOpcode opcode, Register src, string opcodestr>
   : BBCPUInstr<(outs), (ins), opcodestr, src.AsmName, []> {
   let Uses = [A, B];
   let Opcode = opcode.Value;
+}
+
+class BBCPUImmInstr<BBCPUOpcode opcode, string opcodestr>
+  : BBCPUInstr<(outs), (ins imm8:$imm), opcodestr, "$imm", []> {
+  bits<8> imm;
+
+  let Size = 2;
+  let Opcode = opcode.Value;
+  let Inst{15-8} = imm;
 }
 
 def NOP : BBCPUNoopInstr<OPC_NOP, "nop">;
@@ -665,6 +724,21 @@ def JMPRELTLO : BBCPURelJmpRegInstr<OPC_JMPRELTLO, TL, "jro">;
 def JMPRELTLNO : BBCPURelJmpRegInstr<OPC_JMPRELTLNO, TL, "jrno">;
 def JMPRELFUN : BBCPUJmpImmInstr<OPC_JMPRELFUN, "call">;
 let Uses = [T] in def JMPRELRET : BBCPUNoopInstr<OPC_JMPRELRET, "ret">;
+def PUSHA : BBCPUSRegInstr<OPC_PUSHA, A, "push">;
+def PUSHB : BBCPUSRegInstr<OPC_PUSHB, B, "push">;
+def PUSHTH : BBCPUSRegInstr<OPC_PUSHTH, TH, "push">;
+def PUSHTL : BBCPUSRegInstr<OPC_PUSHTL, TL, "push">;
+def PUSHT : BBCPUSRegInstr<OPC_PUSHT, T, "push">;
+def PUSHIMM : BBCPUImmInstr<OPC_PUSHIMM, "push">;
+def PUSHABS : BBCPUSMemInstr<OPC_PUSHABS, "push">;
+def PUSHABSZP : BBCPUSMemZPInstr<OPC_PUSHABSZP, "push">;
+def POPA : BBCPUDRegInstr<OPC_POPA, A, "pop">;
+def POPB : BBCPUDRegInstr<OPC_POPB, B, "pop">;
+def POPTH : BBCPUDRegInstr<OPC_POPTH, TH, "pop">;
+def POPTL : BBCPUDRegInstr<OPC_POPTL, TL, "pop">;
+def POPT : BBCPUDRegInstr<OPC_POPT, T, "pop">;
+def POPMEM : BBCPUMemInstr<OPC_POPMEM, (ins), "pop", "$imm">;
+def POPMEMZP : BBCPUDMemZPInstr<OPC_POPMEMZP, "pop">;
 
 
 def HALT : BBCPUNoopInstr<OPC_HALT, "halt">;
