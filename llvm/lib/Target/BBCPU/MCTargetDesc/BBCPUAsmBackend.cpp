@@ -47,7 +47,7 @@ void BBCPUAsmBackend::applyFixup(const MCAssembler &Asm, const MCFixup &Fixup,
 
   unsigned int Size = (Info.TargetSize / 8);
   unsigned int Offset = Fixup.getOffset();
-  assert(Size + Offset < Data.size() && "invalid fixup offset");
+  assert(Size + Offset <= Data.size() && "invalid fixup offset");
 
   for (unsigned int i = (Info.TargetOffset / 8); i < Size; i++) {
     Data[Offset + i] |= (Value >> (i * 8)) & 0xFF;

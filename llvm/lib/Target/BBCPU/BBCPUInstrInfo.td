@@ -34,6 +34,10 @@ def imm8 : Operand<i8> {
     let EncoderMethod = "encodeImm<MCFixupKind::FK_Data_1, 1>";
 }
 
+def imm16 : Operand<i16> {
+    let EncoderMethod = "encodeImm<MCFixupKind::FK_Data_2, 1>";
+}
+
 def mem : Operand<i16> {
     let ParserMatchClass = MemOperandClass;
     let OperandType = "OPERAND_MEMORY";
@@ -46,6 +50,10 @@ def memzp : Operand<i8> {
     let OperandType = "OPERAND_MEMORY";
     let MIOperandInfo = (ops i8imm);
     let EncoderMethod = "encodeImm<MCFixupKind::FK_Data_1, 1>";
+}
+
+def relimm8 : Operand<i8> {
+    let EncoderMethod = "encodeImm<MCFixupKind::FK_PCRel_1, 1>";
 }
 
 class IndexedReg<Register reg> : Operand<OtherVT> {
@@ -457,6 +465,36 @@ class BBCPUStcRegInstr<BBCPUOpcode opcode, Register src, string opcodestr>
   let Opcode = opcode.Value;
 }
 
+class BBCPUJmpImmInstr<BBCPUOpcode opcode, string opcodestr>
+  : BBCPUInstr<(outs), (ins imm16:$imm), opcodestr, "$imm", []> {
+  bits<16> imm;
+
+  let Size = 3;
+  let Opcode = opcode.Value;
+  let Inst{23-8} = imm;
+}
+
+class BBCPUJmpRegInstr<BBCPUOpcode opcode, Register src, string opcodestr>
+  : BBCPUInstr<(outs), (ins), opcodestr, src.AsmName, []> {
+  let Opcode = opcode.Value;
+}
+
+class BBCPURelJmpImmInstr<BBCPUOpcode opcode, string opcodestr>
+  : BBCPUInstr<(outs), (ins relimm8:$imm), opcodestr, "$imm", []> {
+  let Uses = [A, B];
+  bits<8> imm;
+
+  let Size = 2;
+  let Opcode = opcode.Value;
+  let Inst{15-8} = imm;
+}
+
+class BBCPURelJmpRegInstr<BBCPUOpcode opcode, Register src, string opcodestr>
+  : BBCPUInstr<(outs), (ins), opcodestr, src.AsmName, []> {
+  let Uses = [A, B];
+  let Opcode = opcode.Value;
+}
+
 def NOP : BBCPUNoopInstr<OPC_NOP, "nop">;
 def MOVAB : BBCPUBinaryRegInstr<OPC_MOVAB, A, B, "mov", "a, b">;
 def MOVATH : BBCPUBinaryRegInstr<OPC_MOVATH, A, TH, "mov", "a, th">;
@@ -583,6 +621,50 @@ def SHLMEMA : BBCPUMemRegInstr<OPC_SHLMEMA, A, "shl", "$imm, a">;
 def SHLAB : BBCPUBinaryRegInstr<OPC_SHLAB, A, B, "shl", "a, b">;
 def SHLBB : BBCPUBinaryRegInstr<OPC_SHLBB, B, B, "shl", "b, b">;
 def SHLMEMB : BBCPUMemRegInstr<OPC_SHLMEMB, B, "shl", "$imm, b">;
+def JMPIMM : BBCPUJmpImmInstr<OPC_JMPIMM, "jmp">;
+def JMPIMMS : BBCPUJmpImmInstr<OPC_JMPIMMS, "js">;
+def JMPIMMNS : BBCPUJmpImmInstr<OPC_JMPIMMNS, "jns">;
+def JMPIMMTS : BBCPUJmpRegInstr<OPC_JMPIMMTS, T, "js">;
+def JMPIMMTNS : BBCPUJmpRegInstr<OPC_JMPIMMTNS, T, "jns">;
+def JMPIMMP : BBCPUJmpImmInstr<OPC_JMPIMMP, "jp">;
+def JMPIMMNP : BBCPUJmpImmInstr<OPC_JMPIMMNP, "jnp">;
+def JMPIMMTP : BBCPUJmpRegInstr<OPC_JMPIMMTP, T, "jp">;
+def JMPIMMTNP : BBCPUJmpRegInstr<OPC_JMPIMMTNP, T, "jnp">;
+def JMPIMMZ : BBCPUJmpImmInstr<OPC_JMPIMMZ, "jz">;
+def JMPIMMNZ : BBCPUJmpImmInstr<OPC_JMPIMMNZ, "jnz">;
+def JMPIMMTZ : BBCPUJmpRegInstr<OPC_JMPIMMTZ, T, "jz">;
+def JMPIMMTNZ : BBCPUJmpRegInstr<OPC_JMPIMMTNZ, T, "jnz">;
+def JMPIMMC : BBCPUJmpImmInstr<OPC_JMPIMMC, "jc">;
+def JMPIMMNC : BBCPUJmpImmInstr<OPC_JMPIMMNC, "jnc">;
+def JMPIMMTC : BBCPUJmpRegInstr<OPC_JMPIMMTC, T, "jc">;
+def JMPIMMTNC : BBCPUJmpRegInstr<OPC_JMPIMMTNC, T, "jnc">;
+def JMPIMMO : BBCPUJmpImmInstr<OPC_JMPIMMO, "jo">;
+def JMPIMMNO : BBCPUJmpImmInstr<OPC_JMPIMMNO, "jno">;
+def JMPIMMTO : BBCPUJmpRegInstr<OPC_JMPIMMTO, T, "jo">;
+def JMPIMMTNO : BBCPUJmpRegInstr<OPC_JMPIMMTNO, T, "jno">;
+def JMPREL : BBCPURelJmpImmInstr<OPC_JMPREL, "jr">;
+def JMPRELS : BBCPURelJmpImmInstr<OPC_JMPRELS, "jrs">;
+def JMPRELNS : BBCPURelJmpImmInstr<OPC_JMPRELNS, "jrns">;
+def JMPRELTLS : BBCPURelJmpRegInstr<OPC_JMPRELTLS, TL, "jrs">;
+def JMPRELTLNS : BBCPURelJmpRegInstr<OPC_JMPRELTLNS, TL, "jrns">;
+def JMPRELP : BBCPURelJmpImmInstr<OPC_JMPRELP, "jrp">;
+def JMPRELNP : BBCPURelJmpImmInstr<OPC_JMPRELNP, "jrnp">;
+def JMPRELTLP : BBCPURelJmpRegInstr<OPC_JMPRELTLP, TL, "jrp">;
+def JMPRELTLNP : BBCPURelJmpRegInstr<OPC_JMPRELTLNP, TL, "jrnp">;
+def JMPRELZ : BBCPURelJmpImmInstr<OPC_JMPRELZ, "jrz">;
+def JMPRELNZ : BBCPURelJmpImmInstr<OPC_JMPRELNZ, "jrnz">;
+def JMPRELTLZ : BBCPURelJmpRegInstr<OPC_JMPRELTLZ, TL, "jrz">;
+def JMPRELTLNZ : BBCPURelJmpRegInstr<OPC_JMPRELTLNZ, TL, "jrnz">;
+def JMPRELC : BBCPURelJmpImmInstr<OPC_JMPRELC, "jrc">;
+def JMPRELNC : BBCPURelJmpImmInstr<OPC_JMPRELNC, "jrnc">;
+def JMPRELTLC : BBCPURelJmpRegInstr<OPC_JMPRELTLC, TL, "jrc">;
+def JMPRELTLNC : BBCPURelJmpRegInstr<OPC_JMPRELTLNC, TL, "jrnc">;
+def JMPRELO : BBCPURelJmpImmInstr<OPC_JMPRELO, "jro">;
+def JMPRELNO : BBCPURelJmpImmInstr<OPC_JMPRELNO, "jrno">;
+def JMPRELTLO : BBCPURelJmpRegInstr<OPC_JMPRELTLO, TL, "jro">;
+def JMPRELTLNO : BBCPURelJmpRegInstr<OPC_JMPRELTLNO, TL, "jrno">;
+def JMPRELFUN : BBCPUJmpImmInstr<OPC_JMPRELFUN, "call">;
+let Uses = [T] in def JMPRELRET : BBCPUNoopInstr<OPC_JMPRELRET, "ret">;
 
 
 def HALT : BBCPUNoopInstr<OPC_HALT, "halt">;
