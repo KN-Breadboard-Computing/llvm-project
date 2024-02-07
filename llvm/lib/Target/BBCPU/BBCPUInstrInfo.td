@@ -658,11 +658,15 @@ def SUBMEMZPBA : BBCPUMemZPInstr<OPC_SUBMEMZPBA, (ins DR:$src1, DR:$src2), "sub"
 def SUBSTCAB : BBCPUStcInstr<OPC_SUBSTCAB, (ins DR:$a, DR:$b), "sub", "$dst, a, b">;
 def SUBSTCBA : BBCPUStcInstr<OPC_SUBSTCBA, (ins DR:$b, DR:$a), "sub", "$dst, b, a">;
 def DIV2AA : BBCPUBinaryRegInstr<OPC_DIV2AA, A, A, "div2", "a, a">;
-def DIV2BA : BBCPUBinaryRegInstr<OPC_DIV2AB, B, A, "div2", "b, a">;
-def DIV2MEMA : BBCPUMemRegInstr<OPC_DIV2MEMA, A, "div2", "$imm, a">;
 def DIV2AB : BBCPUBinaryRegInstr<OPC_DIV2AB, A, B, "div2", "a, b">;
+def DIV2BA : BBCPUBinaryRegInstr<OPC_DIV2BA, B, A, "div2", "b, a">;
 def DIV2BB : BBCPUBinaryRegInstr<OPC_DIV2BB, B, B, "div2", "b, b">;
+def DIV2MEMA : BBCPUMemRegInstr<OPC_DIV2MEMA, A, "div2", "$imm, a">;
 def DIV2MEMB : BBCPUMemRegInstr<OPC_DIV2MEMB, B, "div2", "$imm, b">;
+def DIV2MEMZPA : BBCPUMemZPRegInstr<OPC_DIV2MEMZPA, A, "div2", "$imm, a">;
+def DIV2MEMZPB : BBCPUMemZPRegInstr<OPC_DIV2MEMZPB, B, "div2", "$imm, b">;
+def DIV2STCA : BBCPUStcRegInstr<OPC_DIV2STCA, A, "div2">;
+def DIV2STCB : BBCPUStcRegInstr<OPC_DIV2STCB, B, "div2">;
 def INVAA : BBCPUBinaryRegInstr<OPC_INVAA, A, A, "inv", "a, a">;
 def INVBA : BBCPUBinaryRegInstr<OPC_INVBA, B, A, "inv", "b, a">;
 def INVMEMA : BBCPUMemRegInstr<OPC_INVMEMA, A, "inv", "$imm, a">;
@@ -753,3 +757,17 @@ def POPMEMZP : BBCPUMemZPInstr<OPC_POPMEMZP, (ins), "pop", "$imm">;
 
 
 def HALT : BBCPUNoopInstr<OPC_HALT, "halt">;
+
+//===----------------------------------------------------------------------===//
+// Instruction aliases
+//===----------------------------------------------------------------------===//
+def ASRAA : InstAlias<"asr a, a", (DIV2AA)>;
+def ASRAB : InstAlias<"asr a, b", (DIV2AB)>;
+def ASRBA : InstAlias<"asr b, a", (DIV2BA)>;
+def ASRBB : InstAlias<"asr b, b", (DIV2BB)>;
+def ASRMEMA : InstAlias<"asr $dst, a", (DIV2MEMA mem:$dst)>;
+def ASRMEMB : InstAlias<"asr $dst, b", (DIV2MEMB mem:$dst)>;
+def ASRMEMZPA : InstAlias<"asr $dst, a", (DIV2MEMZPA memzp:$dst)>;
+def ASRMEMZPB : InstAlias<"asr $dst, b", (DIV2MEMZPB memzp:$dst)>;
+def ASRSTCA : InstAlias<"asr $dst, a", (DIV2STCA stc:$dst)>;
+def ASRSTCB : InstAlias<"asr $dst, b", (DIV2STCB stc:$dst)>;
