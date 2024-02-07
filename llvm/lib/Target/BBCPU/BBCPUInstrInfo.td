@@ -559,6 +559,13 @@ class BBCPUStcInstr<BBCPUOpcode opcode, dag ins, string opcodestr, string argstr
   let Opcode = opcode.Value;
 }
 
+class BBCPUCmpInstr<BBCPUOpcode opcode, Register r1, Register r2>
+  : BBCPUInstr<(outs), (ins), "cmp", !strconcat(r1.AsmName, ", ", r2.AsmName), []> {
+  let Uses = [r1, r2, A, B];
+
+  let Opcode = opcode.Value;
+}
+
 def NOP : BBCPUNoopInstr<OPC_NOP, "nop">;
 def MOVAB : BBCPUBinaryRegInstr<OPC_MOVAB, A, B, "mov", "a, b">;
 def MOVATH : BBCPUBinaryRegInstr<OPC_MOVATH, A, TH, "mov", "a, th">;
@@ -712,6 +719,18 @@ def SHLMEMZPA : BBCPUMemZPRegInstr<OPC_SHLMEMZPA, A, "shl", "$imm, a">;
 def SHLMEMZPB : BBCPUMemZPRegInstr<OPC_SHLMEMZPB, B, "shl", "$imm, b">;
 def SHLSTCA : BBCPUStcRegInstr<OPC_SHLSTCA, A, "shl">;
 def SHLSTCB : BBCPUStcRegInstr<OPC_SHLSTCB, B, "shl">;
+def CMPAB : BBCPUCmpInstr<OPC_CMPAB, A, B>;
+def CMPBA : BBCPUCmpInstr<OPC_CMPBA, B, A>;
+def CMPTHTL : BBCPUCmpInstr<OPC_CMPTHTL, TH, TL>;
+def CMPTLTH : BBCPUCmpInstr<OPC_CMPTLTH, TL, TH>;
+def CMPTHA : BBCPUCmpInstr<OPC_CMPTHA, TH, A>;
+def CMPATH : BBCPUCmpInstr<OPC_CMPATH, A, TH>;
+def CMPTHB : BBCPUCmpInstr<OPC_CMPTHB, TH, B>;
+def CMPBTH : BBCPUCmpInstr<OPC_CMPBTH, B, TH>;
+def CMPTLA : BBCPUCmpInstr<OPC_CMPTLA, TL, A>;
+def CMPATL : BBCPUCmpInstr<OPC_CMPATL, A, TL>;
+def CMPTLB : BBCPUCmpInstr<OPC_CMPTLB, TL, B>;
+def CMPBTL : BBCPUCmpInstr<OPC_CMPBTL, B, TL>;
 def JMPIMM : BBCPUJmpImmInstr<OPC_JMPIMM, "jmp">;
 def JMPIMMS : BBCPUJmpImmInstr<OPC_JMPIMMS, "js">;
 def JMPIMMNS : BBCPUJmpImmInstr<OPC_JMPIMMNS, "jns">;
