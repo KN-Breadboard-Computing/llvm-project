@@ -45,6 +45,8 @@ unsigned int BBCPUELFObjectWriter::getRelocType(MCContext &Ctx,
       return ELF::R_BBCPU_8;
     case FK_Data_2:
       return ELF::R_BBCPU_16;
+    case FK_PCRel_1:
+      return ELF::R_BBCPU_PCREL8;
     }
   }
 }
