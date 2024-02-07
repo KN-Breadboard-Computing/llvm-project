@@ -566,7 +566,6 @@ class BBCPUCmpInstr<BBCPUOpcode opcode, Register r1, Register r2>
   let Opcode = opcode.Value;
 }
 
-def NOP : BBCPUNoopInstr<OPC_NOP, "nop">;
 def MOVAB : BBCPUBinaryRegInstr<OPC_MOVAB, A, B, "mov", "a, b">;
 def MOVATH : BBCPUBinaryRegInstr<OPC_MOVATH, A, TH, "mov", "a, th">;
 def MOVATL : BBCPUBinaryRegInstr<OPC_MOVATL, A, TL, "mov", "a, tl">;
@@ -801,8 +800,10 @@ def POPTL : BBCPUDRegInstr<OPC_POPTL, TL, "pop">;
 def POPT : BBCPUDRegInstr<OPC_POPT, T, "pop">;
 def POPMEM : BBCPUMemInstr<OPC_POPMEM, (ins), "pop", "$imm">;
 def POPMEMZP : BBCPUMemZPInstr<OPC_POPMEMZP, (ins), "pop", "$imm">;
-
-
+def NOP : BBCPUNoopInstr<OPC_NOP, "nop">;
+def SKIP : BBCPUNoopInstr<OPC_SKIP, "skip">;
+def SKIP1 : BBCPUNoopInstr<OPC_SKIP1, "skip1">;
+def SKIP2 : BBCPUNoopInstr<OPC_SKIP2, "skip2">;
 def HALT : BBCPUNoopInstr<OPC_HALT, "halt">;
 
 //===----------------------------------------------------------------------===//

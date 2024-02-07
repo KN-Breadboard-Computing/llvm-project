@@ -62,8 +62,7 @@ bool BBCPUAsmBackend::fixupNeedsRelaxation(const MCFixup &Fixup, uint64_t Value,
 
 bool BBCPUAsmBackend::writeNopData(raw_ostream &OS, uint64_t Count,
                                    const MCSubtargetInfo *STI) const {
-  // BBCPU `nop` is just 0b00000000, so Count `nop`s is just Count 0 bytes
-  OS.write_zeros(Count);
+  for (size_t i = 0; i < Count; i++) OS.write(0xD4);
   return true;
 }
 
