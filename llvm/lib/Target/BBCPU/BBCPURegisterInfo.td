@@ -34,9 +34,11 @@ def T : BBCPUReg<"t", ["tmp"]> {
     let DwarfNumbers = [3];
 }
 
-// NOTE: This feels a bit hacky, but simplifies the way instructions are defined
-def RA : RegisterClass<"BBCPU", [i8], 8, (add A)> {}
-def RB : RegisterClass<"BBCPU", [i8], 8, (add B)> {}
+def DR : RegisterClass<"BBCPU", [i8], 8, (add A, B)> {
+}
 
-def GPR : RegisterClass<"BBCPU", [i8], 8, (add A, B, TL, TH)> {
+def TR : RegisterClass<"BBCPU", [i8], 8, (add TL, TH)> {
+}
+
+def GPR : RegisterClass<"BBCPU", [i8], 8, (add DR, TR)> {
 }

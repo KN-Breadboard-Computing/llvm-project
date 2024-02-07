@@ -390,8 +390,8 @@ class BBCPUMemInstr<BBCPUOpcode opcode, dag ins, string opcodestr, string argstr
   let Inst{23-8} = imm;
 }
 
-class BBCPUDMemZPInstr<BBCPUOpcode opcode, string opcodestr>
-    : BBCPUInstr<(outs memzp:$imm), (ins), opcodestr, "$imm", []> {
+class BBCPUMemZPInstr<BBCPUOpcode opcode, dag ins, string opcodestr, string argstr>
+    : BBCPUInstr<(outs memzp:$imm), ins, opcodestr, argstr, []> {
   let Uses = [T];
 
   bits<8> imm;
@@ -554,6 +554,11 @@ class BBCPUImmInstr<BBCPUOpcode opcode, string opcodestr>
   let Inst{15-8} = imm;
 }
 
+class BBCPUStcInstr<BBCPUOpcode opcode, dag ins, string opcodestr, string argstr>
+  : BBCPUInstr<(outs stc:$dst), ins, opcodestr, argstr, []> {
+  let Opcode = opcode.Value;
+}
+
 def NOP : BBCPUNoopInstr<OPC_NOP, "nop">;
 def MOVAB : BBCPUBinaryRegInstr<OPC_MOVAB, A, B, "mov", "a, b">;
 def MOVATH : BBCPUBinaryRegInstr<OPC_MOVATH, A, TH, "mov", "a, th">;
@@ -637,15 +642,21 @@ def NEGMEMZPA : BBCPUMemZPRegInstr<OPC_NEGMEMZPA, A, "neg", "$imm, a">;
 def NEGMEMZPB : BBCPUMemZPRegInstr<OPC_NEGMEMZPB, B, "neg", "$imm, b">;
 def NEGSTCA : BBCPUStcRegInstr<OPC_NEGSTCA, A, "neg">;
 def NEGSTCB : BBCPUStcRegInstr<OPC_NEGSTCB, B, "neg">;
-def ADDA : BBCPURegInstr<OPC_ADDA, A, (ins GPR:$src1, GPR:$src2), "add", "a, $src1, $src2">;
-def ADDB : BBCPURegInstr<OPC_ADDB, B, (ins GPR:$src1, GPR:$src2), "add", "b, $src1, $src2">;
-def ADDMEM : BBCPUMemInstr<OPC_ADDMEM, (ins GPR:$src1, GPR:$src2), "add", "$imm, $src1, $src2">;
+def ADDA : BBCPURegInstr<OPC_ADDA, A, (ins DR:$src1, DR:$src2), "add", "a, $src1, $src2">;
+def ADDB : BBCPURegInstr<OPC_ADDB, B, (ins DR:$src1, DR:$src2), "add", "b, $src1, $src2">;
+def ADDMEM : BBCPUMemInstr<OPC_ADDMEM, (ins DR:$src1, DR:$src2), "add", "$imm, $src1, $src2">;
+def ADDMEMZP : BBCPUMemZPInstr<OPC_ADDMEMZP, (ins DR:$src1, DR:$src2), "add", "$imm, $src1, $src2">;
+def ADDSTC : BBCPUStcInstr<OPC_ADDSTC, (ins DR:$src1, DR:$src2), "add", "$dst, $src1, $src2">;
 def SUBAAB : BBCPUTernaryRegInstr<OPC_SUBAAB, A, A, B, "sub", "a, a, b">;
-def SUBBAB : BBCPUTernaryRegInstr<OPC_SUBBAB, B, A, B, "sub", "b, a, b">;
-def SUBMEMAB : BBCPUMemBinaryRegInstr<OPC_SUBMEMAB, A, B, "sub", "$imm, a, b">;
 def SUBABA : BBCPUTernaryRegInstr<OPC_SUBABA, A, B, A, "sub", "a, b, a">;
+def SUBBAB : BBCPUTernaryRegInstr<OPC_SUBBAB, B, A, B, "sub", "b, a, b">;
 def SUBBBA : BBCPUTernaryRegInstr<OPC_SUBBBA, B, B, A, "sub", "b, b, a">;
+def SUBMEMAB : BBCPUMemBinaryRegInstr<OPC_SUBMEMAB, A, B, "sub", "$imm, a, b">;
 def SUBMEMBA : BBCPUMemBinaryRegInstr<OPC_SUBMEMBA, B, A, "sub", "$imm, b, a">;
+def SUBMEMZPAB : BBCPUMemZPInstr<OPC_SUBMEMZPAB, (ins DR:$src1, DR:$src2), "sub", "$imm, a, b">;
+def SUBMEMZPBA : BBCPUMemZPInstr<OPC_SUBMEMZPBA, (ins DR:$src1, DR:$src2), "sub", "$imm, b, a">;
+def SUBSTCAB : BBCPUStcInstr<OPC_SUBSTCAB, (ins DR:$a, DR:$b), "sub", "$dst, a, b">;
+def SUBSTCBA : BBCPUStcInstr<OPC_SUBSTCBA, (ins DR:$b, DR:$a), "sub", "$dst, b, a">;
 def DIV2AA : BBCPUBinaryRegInstr<OPC_DIV2AA, A, A, "div2", "a, a">;
 def DIV2BA : BBCPUBinaryRegInstr<OPC_DIV2AB, B, A, "div2", "b, a">;
 def DIV2MEMA : BBCPUMemRegInstr<OPC_DIV2MEMA, A, "div2", "$imm, a">;
@@ -738,7 +749,7 @@ def POPTH : BBCPUDRegInstr<OPC_POPTH, TH, "pop">;
 def POPTL : BBCPUDRegInstr<OPC_POPTL, TL, "pop">;
 def POPT : BBCPUDRegInstr<OPC_POPT, T, "pop">;
 def POPMEM : BBCPUMemInstr<OPC_POPMEM, (ins), "pop", "$imm">;
-def POPMEMZP : BBCPUDMemZPInstr<OPC_POPMEMZP, "pop">;
+def POPMEMZP : BBCPUMemZPInstr<OPC_POPMEMZP, (ins), "pop", "$imm">;
 
 
 def HALT : BBCPUNoopInstr<OPC_HALT, "halt">;
