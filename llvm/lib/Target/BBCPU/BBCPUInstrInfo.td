@@ -668,11 +668,15 @@ def DIV2MEMZPB : BBCPUMemZPRegInstr<OPC_DIV2MEMZPB, B, "div2", "$imm, b">;
 def DIV2STCA : BBCPUStcRegInstr<OPC_DIV2STCA, A, "div2">;
 def DIV2STCB : BBCPUStcRegInstr<OPC_DIV2STCB, B, "div2">;
 def INVAA : BBCPUBinaryRegInstr<OPC_INVAA, A, A, "inv", "a, a">;
-def INVBA : BBCPUBinaryRegInstr<OPC_INVBA, B, A, "inv", "b, a">;
-def INVMEMA : BBCPUMemRegInstr<OPC_INVMEMA, A, "inv", "$imm, a">;
 def INVAB : BBCPUBinaryRegInstr<OPC_INVAB, A, B, "inv", "a, b">;
+def INVBA : BBCPUBinaryRegInstr<OPC_INVBA, B, A, "inv", "b, a">;
 def INVBB : BBCPUBinaryRegInstr<OPC_INVBB, B, B, "inv", "b, b">;
+def INVMEMA : BBCPUMemRegInstr<OPC_INVMEMA, A, "inv", "$imm, a">;
 def INVMEMB : BBCPUMemRegInstr<OPC_INVMEMB, B, "inv", "$imm, b">;
+def INVMEMZPA : BBCPUMemZPRegInstr<OPC_INVMEMZPA, A, "inv", "$imm, a">;
+def INVMEMZPB : BBCPUMemZPRegInstr<OPC_INVMEMZPB, B, "inv", "$imm, b">;
+def INVSTCA : BBCPUStcRegInstr<OPC_INVSTCA, A, "inv">;
+def INVSTCB : BBCPUStcRegInstr<OPC_INVSTCB, B, "inv">;
 // TODO: Maybe operands here should be swappable with each other for Boolean operations
 def ORA : BBCPURegInstr<OPC_ORA, A, (ins GPR:$src1, GPR:$src2), "or", "a, $src1, $src2">;
 def ORB : BBCPURegInstr<OPC_ORB, B, (ins GPR:$src1, GPR:$src2), "or", "b, $src1, $src2">;
