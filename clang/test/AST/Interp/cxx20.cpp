@@ -739,3 +739,29 @@ namespace NonPrimitiveOpaqueValue
 
   static_assert(!ternary(), "");
 }
+
+namespace TryCatch {
+  constexpr int foo() {
+    int a = 10;
+    try {
+      ++a;
+    } catch(int m) {
+      --a;
+    }
+    return a;
+  }
+  static_assert(foo() == 11);
+}
+
+namespace IgnoredConstantExpr {
+  consteval int immediate() { return 0;}
+  struct ReferenceToNestedMembers {
+    int m;
+    int a = ((void)immediate(), m);
+    int b = ((void)immediate(), this->m);
+  };
+  struct ReferenceToNestedMembersTest {
+    void* m = nullptr;
+    ReferenceToNestedMembers j{0};
+  } test_reference_to_nested_members;
+}

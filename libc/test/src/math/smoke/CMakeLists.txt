@@ -65,6 +65,8 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.fabs
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -79,10 +81,14 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.fabsf
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
   fabsl_test
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
   SUITE
     libc-math-smoke-tests
   SRCS
@@ -92,6 +98,22 @@ add_fp_unittest(
   DEPENDS
     libc.include.math
     libc.src.math.fabsl
+    libc.src.__support.FPUtil.fp_bits
+)
+
+add_fp_unittest(
+  fabsf128_test
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    fabsf128_test.cpp
+  HDRS
+    FAbsTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.fabsf128
     libc.src.__support.FPUtil.fp_bits
 )
 
@@ -107,6 +129,8 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.trunc
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -121,6 +145,8 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.truncf
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -135,6 +161,24 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.truncl
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
+)
+
+add_fp_unittest(
+  truncf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    truncf128_test.cpp
+  HDRS
+    TruncTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.truncf128
+    libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -149,6 +193,8 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.ceil
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -163,6 +209,8 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.ceilf
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -177,6 +225,24 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.ceill
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
+)
+
+add_fp_unittest(
+  ceilf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    ceilf128_test.cpp
+  HDRS
+    CeilTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.ceilf128
+    libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -191,6 +257,8 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.floor
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -205,6 +273,8 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.floorf
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -219,6 +289,24 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.floorl
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
+)
+
+add_fp_unittest(
+  floorf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    floorf128_test.cpp
+  HDRS
+    FloorTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.floorf128
+    libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -233,6 +321,8 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.round
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -247,6 +337,8 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.roundf
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -261,6 +353,24 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.roundl
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
+)
+
+add_fp_unittest(
+  roundf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    roundf128_test.cpp
+  HDRS
+    RoundTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.roundf128
+    libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -279,6 +389,8 @@ add_fp_unittest(
     libc.src.fenv.fetestexcept
     libc.src.math.lround
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -297,6 +409,8 @@ add_fp_unittest(
     libc.src.fenv.fetestexcept
     libc.src.math.lroundf
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -315,6 +429,8 @@ add_fp_unittest(
     libc.src.fenv.fetestexcept
     libc.src.math.lroundl
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -333,6 +449,8 @@ add_fp_unittest(
     libc.src.fenv.fetestexcept
     libc.src.math.llround
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -351,6 +469,8 @@ add_fp_unittest(
     libc.src.fenv.fetestexcept
     libc.src.math.llroundf
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -369,6 +489,8 @@ add_fp_unittest(
     libc.src.fenv.fetestexcept
     libc.src.math.llroundl
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -596,6 +718,8 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.copysign
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -610,6 +734,8 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.copysignf
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -624,6 +750,24 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.copysignl
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
+)
+
+add_fp_unittest(
+  copysignf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    copysignf128_test.cpp
+  HDRS
+    CopySignTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.copysignf128
+    libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -681,6 +825,7 @@ if(NOT LIBC_GPU_TARGET_ARCHITECTURE_IS_NVPTX)
     DEPENDS
       libc.include.math
       libc.src.math.ilogb
+      libc.src.__support.CPP.limits
       libc.src.__support.FPUtil.fp_bits
       libc.src.__support.FPUtil.manipulation_functions
   )
@@ -696,6 +841,7 @@ if(NOT LIBC_GPU_TARGET_ARCHITECTURE_IS_NVPTX)
     DEPENDS
       libc.include.math
       libc.src.math.ilogbf
+      libc.src.__support.CPP.limits
       libc.src.__support.FPUtil.fp_bits
       libc.src.__support.FPUtil.manipulation_functions
   )
@@ -712,6 +858,7 @@ add_fp_unittest(
   DEPENDS
     libc.include.math
     libc.src.math.ilogbl
+    libc.src.__support.CPP.limits
     libc.src.__support.FPUtil.fp_bits
     libc.src.__support.FPUtil.manipulation_functions
 )
@@ -727,6 +874,7 @@ add_fp_unittest(
   DEPENDS
     libc.include.math
     libc.src.math.ldexp
+    libc.src.__support.CPP.limits
     libc.src.__support.FPUtil.fp_bits
     libc.src.__support.FPUtil.normal_float
 )
@@ -742,6 +890,7 @@ add_fp_unittest(
   DEPENDS
     libc.include.math
     libc.src.math.ldexpf
+    libc.src.__support.CPP.limits
     libc.src.__support.FPUtil.fp_bits
     libc.src.__support.FPUtil.normal_float
 )
@@ -757,6 +906,7 @@ add_fp_unittest(
   DEPENDS
     libc.include.math
     libc.src.math.ldexpl
+    libc.src.__support.CPP.limits
     libc.src.__support.FPUtil.fp_bits
     libc.src.__support.FPUtil.normal_float
 )
@@ -904,7 +1054,6 @@ if(NOT LIBC_TARGET_ARCHITECTURE_IS_GPU)
     HDRS
       FMinTest.h
     DEPENDS
-      libc.include.math
       libc.src.math.fminf
       libc.src.__support.FPUtil.fp_bits
   )
@@ -918,7 +1067,6 @@ if(NOT LIBC_TARGET_ARCHITECTURE_IS_GPU)
     HDRS
       FMinTest.h
     DEPENDS
-      libc.include.math
       libc.src.math.fmin
       libc.src.__support.FPUtil.fp_bits
   )
@@ -932,8 +1080,20 @@ if(NOT LIBC_TARGET_ARCHITECTURE_IS_GPU)
     HDRS
       FMinTest.h
     DEPENDS
-      libc.include.math
       libc.src.math.fminl
+      libc.src.__support.FPUtil.fp_bits
+  )
+
+  add_fp_unittest(
+    fminf128_test
+    SUITE
+      libc-math-smoke-tests
+    SRCS
+      fminf128_test.cpp
+    HDRS
+      FMinTest.h
+    DEPENDS
+      libc.src.math.fminf128
       libc.src.__support.FPUtil.fp_bits
   )
 
@@ -946,7 +1106,6 @@ if(NOT LIBC_TARGET_ARCHITECTURE_IS_GPU)
     HDRS
       FMaxTest.h
     DEPENDS
-      libc.include.math
       libc.src.math.fmaxf
       libc.src.__support.FPUtil.fp_bits
   )
@@ -960,7 +1119,6 @@ if(NOT LIBC_TARGET_ARCHITECTURE_IS_GPU)
     HDRS
       FMaxTest.h
     DEPENDS
-      libc.include.math
       libc.src.math.fmax
       libc.src.__support.FPUtil.fp_bits
   )
@@ -974,8 +1132,20 @@ if(NOT LIBC_TARGET_ARCHITECTURE_IS_GPU)
     HDRS
       FMaxTest.h
     DEPENDS
-      libc.include.math
       libc.src.math.fmaxl
+      libc.src.__support.FPUtil.fp_bits
+  )
+  
+  add_fp_unittest(
+    fmaxf128_test
+    SUITE
+      libc-math-smoke-tests
+    SRCS
+      fmaxf128_test.cpp
+    HDRS
+      FMaxTest.h
+    DEPENDS
+      libc.src.math.fmaxf128
       libc.src.__support.FPUtil.fp_bits
   )
 endif()
@@ -990,6 +1160,8 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.sqrtf
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -1002,6 +1174,8 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.sqrt
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -1014,6 +1188,22 @@ add_fp_unittest(
     libc.include.math
     libc.src.math.sqrtl
     libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
+)
+
+add_fp_unittest(
+  sqrtf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    sqrtf128_test.cpp
+  DEPENDS
+    libc.include.math
+    libc.src.math.sqrtf128
+    libc.src.__support.FPUtil.fp_bits
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -1028,6 +1218,8 @@ add_fp_unittest(
     libc.src.__support.FPUtil.generic.sqrt
   COMPILE_OPTIONS
     -O3
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -1042,6 +1234,8 @@ add_fp_unittest(
     libc.src.__support.FPUtil.generic.sqrt
   COMPILE_OPTIONS
     -O3
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -1056,6 +1250,24 @@ add_fp_unittest(
     libc.src.__support.FPUtil.generic.sqrt
   COMPILE_OPTIONS
     -O3
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
+)
+
+add_fp_unittest(
+  generic_sqrtf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    generic_sqrtf128_test.cpp
+  DEPENDS
+    libc.src.math.sqrtf128
+    libc.src.__support.FPUtil.fp_bits
+    libc.src.__support.FPUtil.generic.sqrt
+  COMPILE_OPTIONS
+    -O3
+  # FIXME: Currently fails on the GPU build.
+  UNIT_TEST_ONLY
 )
 
 add_fp_unittest(
@@ -1127,6 +1339,54 @@ add_fp_unittest(
     libc.src.__support.FPUtil.fp_bits
 )
 
+add_fp_unittest(
+  nanf_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nanf_test.cpp
+  DEPENDS
+    libc.include.math
+    libc.include.signal
+    libc.src.math.nanf
+    libc.src.__support.FPUtil.fp_bits
+  # FIXME: The nan tests currently have death tests, which aren't supported for
+  # hermetic tests.
+  UNIT_TEST_ONLY
+)
+
+add_fp_unittest(
+  nan_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nan_test.cpp
+  DEPENDS
+    libc.include.math
+    libc.include.signal
+    libc.src.math.nan
+    libc.src.__support.FPUtil.fp_bits
+  # FIXME: The nan tests currently have death tests, which aren't supported for
+  # hermetic tests.
+  UNIT_TEST_ONLY
+)
+
+add_fp_unittest(
+  nanl_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nanl_test.cpp
+  DEPENDS
+    libc.include.math
+    libc.include.signal
+    libc.src.math.nanl
+    libc.src.__support.FPUtil.fp_bits
+  # FIXME: The nan tests currently have death tests, which aren't supported for
+  # hermetic tests.
+  UNIT_TEST_ONLY
+)
+
 # FIXME: These tests are currently spurious for NVPTX.
 if(NOT LIBC_GPU_TARGET_ARCHITECTURE_IS_NVPTX)
   add_fp_unittest(
@@ -1171,6 +1431,54 @@ add_fp_unittest(
   DEPENDS
     libc.include.math
     libc.src.math.nextafterl
+    libc.src.__support.FPUtil.basic_operations
+    libc.src.__support.FPUtil.fp_bits
+)
+
+# FIXME: These tests are currently spurious for the GPU.
+if(NOT LIBC_TARGET_ARCHITECTURE_IS_GPU)
+  add_fp_unittest(
+    nexttoward_test
+    SUITE
+      libc-math-smoke-tests
+    SRCS
+      nexttoward_test.cpp
+    HDRS
+      NextTowardTest.h
+    DEPENDS
+      libc.include.math
+      libc.src.math.nexttoward
+      libc.src.__support.FPUtil.basic_operations
+      libc.src.__support.FPUtil.fp_bits
+  )
+
+  add_fp_unittest(
+    nexttowardf_test
+    SUITE
+      libc-math-smoke-tests
+    SRCS
+      nexttowardf_test.cpp
+    HDRS
+      NextTowardTest.h
+    DEPENDS
+      libc.include.math
+      libc.src.math.nexttowardf
+      libc.src.__support.FPUtil.basic_operations
+      libc.src.__support.FPUtil.fp_bits
+  )
+endif()
+
+add_fp_unittest(
+  nexttowardl_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nexttowardl_test.cpp
+  HDRS
+    NextTowardTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.nexttowardl
     libc.src.__support.FPUtil.basic_operations
     libc.src.__support.FPUtil.fp_bits
 )
@@ -1347,7 +1655,7 @@ add_fp_unittest(
     libc.src.math.fmodf
     libc.src.__support.FPUtil.basic_operations
     libc.src.__support.FPUtil.nearest_integer_operations
-  # Requires C++ limits.
+  # FIXME: Currently fails on the GPU build.
   UNIT_TEST_ONLY
 )
 
@@ -1365,7 +1673,7 @@ add_fp_unittest(
     libc.src.math.fmod
     libc.src.__support.FPUtil.basic_operations
     libc.src.__support.FPUtil.nearest_integer_operations
-  # Requires C++ limits.
+  # FIXME: Currently fails on the GPU build.
   UNIT_TEST_ONLY
 )
 
@@ -1532,5 +1840,17 @@ add_fp_unittest(
   DEPENDS
     libc.include.math
     libc.src.math.erff
+    libc.src.__support.FPUtil.fp_bits
+)
+
+add_fp_unittest(
+  powf_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    powf_test.cpp
+  DEPENDS
+    libc.include.math
+    libc.src.math.powf
     libc.src.__support.FPUtil.fp_bits
 )
