@@ -1,3 +1,17 @@
+# KN Breadboard Computer LLVM
+Welcome to the KN Breadboard Computer fork of LLVM!
+
+This repository contains the source code for BBCPU LLVM backend. 
+As of 7 Feb. 2024 it only contains code for generating object files from native assembly.
+However, the goal is to eventually get other LLVM tools to work (with the ultimate goal being compiling C code with 
+Clang for BBCPU).
+
+Currently, there are no plans of upstreaming backend in this fork.
+
+Please consult [Docs](llvm/docs/KNBBC/README.md) for information specific to this fork.
+
+Rest of the upstream README follows...
+
 # The LLVM Compiler Infrastructure
 
 Welcome to the LLVM project!
