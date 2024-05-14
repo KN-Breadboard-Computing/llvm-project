@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LLVM_BBCPU_TARGET_MACHINE_H
-#define LLVM_BBCPU_TARGET_MACHINE_H
+#ifndef LLVM_LIB_TARGET_BBCPU_BBCPUTARGETMACHINE_H
+#define LLVM_LIB_TARGET_BBCPU_BBCPUTARGETMACHINE_H
 
 #include "llvm/Target/TargetMachine.h"
 
@@ -23,4 +23,5 @@ class BBCPUTargetMachine : LLVMTargetMachine {
                       std::optional<CodeModel::Model> CM, CodeGenOptLevel OL);
 };
 } // end namespace llvm
-#endif // LLVM_BBCPU_TARGET_MACHINE_H
+
+#endif

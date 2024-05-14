@@ -6,7 +6,6 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file defines the BBCPU specific subclass of TargetMachine.
 //
 //===----------------------------------------------------------------------===//
 
@@ -16,6 +15,16 @@
 
 using namespace llvm;
 
+// e -> little-endian
+// p:16:8 -> 16-bit pointer, 8-bit alignment
+// i8:8 -> 8-bit integer, 8-bit alignment
+// i16:8 -> 16-bit integer, 8-bit alignment
+// i32:8 -> 32-bit integer, 8-bit alignment
+// i64:8 -> 64-bit integer, 8-bit alignment
+// f32:8 -> 32-bit float, 8-bit alignment
+// f64:8 -> 64-bit float, 8-bit alignment
+// n8 -> 8-bit native integer width
+// a:8 -> 8-bit address space
 static const char *BBCompDataLayout =
     "e-p:16:8-i8:8-i16:8-i32:8-i64:8-f32:8-f64:8-n8-a:8";
 

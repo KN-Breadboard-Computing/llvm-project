@@ -10,8 +10,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LLVM_BBCPU_REGISTER_INFO_H
-#define LLVM_BBCPU_REGISTER_INFO_H
+#ifndef LLVM_LIB_TARGET_BBCPU_BBCPUREGISTERINFO_H
+#define LLVM_LIB_TARGET_BBCPU_BBCPUREGISTERINFO_H
+
 
 #include "llvm/CodeGen/TargetRegisterInfo.h"
 
@@ -27,4 +28,4 @@ public:
 
 } // end namespace llvm
 
-#endif // LLVM_BBCPU_REGISTER_INFO_H
+#endif // LLVM_LIB_TARGET_BBCPU_BBCPUREGISTERINFO_H

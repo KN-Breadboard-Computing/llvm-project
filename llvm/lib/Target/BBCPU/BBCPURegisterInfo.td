@@ -21,17 +21,18 @@ class BBCPUSubRegIndex<int size, int offset = 0> : SubRegIndex<size, offset> {
 def F : BBCPUReg<"f", ["flags"]>, DwarfRegNum<[0]>;
 def A : BBCPUReg<"a">, DwarfRegNum<[1]>;
 def B : BBCPUReg<"b">, DwarfRegNum<[2]>;
+def I : BBCPUReg<"int">, DwarfRegNum[3]>;
 
-def TL : BBCPUReg<"tl", ["tmpl"]>, DwarfRegNum<[4]>;
+def TL : BBCPUReg<"tl", ["tmpl"]>, DwarfRegNum<[5]>;
 def TLSubIndex : BBCPUSubRegIndex<8, 0>;
 
-def TH : BBCPUReg<"th", ["tmph"]>, DwarfRegNum<[5]>;
+def TH : BBCPUReg<"th", ["tmph"]>, DwarfRegNum<[6]>;
 def THSubIndex : BBCPUSubRegIndex<8, 8>;
 
 def T : BBCPUReg<"t", ["tmp"]> {
     let SubRegs = [ TH, TL ];
     let SubRegIndices = [ THSubIndex, TLSubIndex ];
-    let DwarfNumbers = [3];
+    let DwarfNumbers = [4];
 }
 
 def DR : RegisterClass<"BBCPU", [i8], 8, (add A, B)> {
