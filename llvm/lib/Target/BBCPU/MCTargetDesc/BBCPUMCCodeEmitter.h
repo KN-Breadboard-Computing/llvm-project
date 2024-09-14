@@ -18,29 +18,29 @@
 #include "llvm/MC/MCContext.h"
 #include "llvm/MC/MCInstrInfo.h"
 
-#define GET_INSTRINFO_OPERAND_TYPES_ENUM
-#include "BBCPUGenInstrInfo.inc"
-
 namespace llvm {
 
 class BBCPUMCCodeEmitter : public MCCodeEmitter {
-  const MCInstrInfo *MCII;
+  const MCInstrInfo &MCII;
+  MCContext &Ctx;
 
 public:
   BBCPUMCCodeEmitter(const MCInstrInfo &MCII, MCContext &Ctx);
 
+  ~BBCPUMCCodeEmitter() override = default;
+  
+  void encodeInstruction(const MCInst &MI, SmallVectorImpl<char> &CB, 
+                        SmallVectorImpl<MCFixup> &Fixups, 
+                        const MCSubtargetInfo &STI) const override;
+
   uint64_t getBinaryCodeForInstr(const MCInst &MI,
-                                 SmallVectorImpl<MCFixup> &Fixups,
-                                 const MCSubtargetInfo &STI) const;
-
+                                SmallVectorImpl<MCFixup> &Fixups,
+                                const MCSubtargetInfo &STI) const;
+  
   unsigned getMachineOpValue(const MCInst &MI, const MCOperand &MO,
-                             SmallVectorImpl<MCFixup> &Fixups,
-                             const MCSubtargetInfo &STI) const;
-
-  void encodeInstruction(const MCInst &Inst, SmallVectorImpl<char> &CB,
-                         SmallVectorImpl<MCFixup> &Fixups,
-                         const MCSubtargetInfo &STI) const override;
+                            SmallVectorImpl<MCFixup> &Fixups,
+                            const MCSubtargetInfo &STI) const;
 };
-} // end namespace llvm
+} // end llvm namespace
 
 #endif // LLVM_BBCPU_MCCODEEMITTER_H

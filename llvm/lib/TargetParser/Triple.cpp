@@ -1470,7 +1470,6 @@ static unsigned getArchPointerBitWidth(llvm::Triple::ArchType Arch) {
 
   case llvm::Triple::avr:
   case llvm::Triple::msp430:
-  case llvm::Triple::bbcpu:
     return 16;
 
   case llvm::Triple::aarch64_32:
@@ -1508,6 +1507,7 @@ static unsigned getArchPointerBitWidth(llvm::Triple::ArchType Arch) {
   case llvm::Triple::x86:
   case llvm::Triple::xcore:
   case llvm::Triple::xtensa:
+  case llvm::Triple::bbcpu:
     return 32;
 
   case llvm::Triple::aarch64:

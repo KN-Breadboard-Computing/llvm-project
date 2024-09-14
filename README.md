@@ -1,7 +1,7 @@
 # KN Breadboard Computer LLVM
 Welcome to the KN Breadboard Computer fork of LLVM!
 
-This repository contains the source code for BBCPU LLVM backend. 
+This repository contains the source code for 16-bit BBCPU LLVM backend. 
 As of 7 Feb. 2024 it only contains code for generating object files from native assembly.
 However, the goal is to eventually get other LLVM tools to work (with the ultimate goal being compiling C code with 
 Clang for BBCPU).
@@ -46,6 +46,33 @@ page for information on building and running LLVM.
 
 For information on how to contribute to the LLVM project, please take a look at
 the [Contributing to LLVM](https://llvm.org/docs/Contributing.html) guide.
+
+### Build
+```
+mkdir llvm/build
+cd llvm/build
+cmake -G "Ninja" -DLLVM_TARGETS_TO_BUILD="BBCPU" -DCMAKE_BUILD_TYPE=Release ../
+cmake --build .
+```
+
+### Test
+#### Assemble
+```
+echo 'and r1,r2,r3' | bin/llvm-mc --triple bbcpu --show-encoding
+```
+
+#### Disassemble
+```
+echo '0x53,0x20' | bin/llvm-mc --triple bbcpu -disassemble
+```
+
+#### Compile
+```
+echo 'define i16 @f1(i16 %a, i16 %b) {
+    %res = and i16 %a, %b
+ret i16 %res
+}' | bin/llc -mtriple bbcpu
+```
 
 ## Getting in touch
 

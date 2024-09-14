@@ -13,27 +13,36 @@
 #ifndef LLVM_BBCPU_MCTARGET_DESC_H
 #define LLVM_BBCPU_MCTARGET_DESC_H
 
-#include "llvm/MC/MCAsmBackend.h"
+#include "llvm/MC/MCInstrDesc.h"
 #include "llvm/MC/MCObjectWriter.h"
-#include "llvm/MC/TargetRegistry.h"
-
-#include <memory>
+#include "llvm/Support/DataTypes.h"
 
 namespace llvm {
-
+class MCAsmBackend;
+class MCCodeEmitter;
+class MCContext;
 class MCInstrInfo;
+class MCRegisterInfo;
+class MCSubtargetInfo;
+class MCRelocationInfo;
+class MCTargetOptions;
+class Target;
+class Triple;
+class StringRef;
+class raw_ostream;
+class raw_pwrite_stream;
 
-MCAsmBackend *createBBCPUMCAsmBackend(const Target &T,
-                                      const MCSubtargetInfo &STI,
-                                      const MCRegisterInfo &MRI,
-                                      const MCTargetOptions &Options);
+MCAsmBackend *createBBCPUAsmBackend(const Target &T, const MCSubtargetInfo &STI,
+                                   const MCRegisterInfo &MRI,
+                                   const MCTargetOptions &Options);
 
 MCCodeEmitter *createBBCPUMCCodeEmitter(const MCInstrInfo &MCII,
-                                        MCContext &Ctx);
+                                       MCContext &Ctx);
 
+/// Construct an BBCPU ELF object writer.
 std::unique_ptr<MCObjectTargetWriter> createBBCPUELFObjectWriter(uint8_t OSABI);
 
-} // end namespace llvm
+} // namespace llvm
 
 #define GET_REGINFO_ENUM
 #include "BBCPUGenRegisterInfo.inc"
@@ -41,5 +50,8 @@ std::unique_ptr<MCObjectTargetWriter> createBBCPUELFObjectWriter(uint8_t OSABI);
 #define GET_INSTRINFO_ENUM
 #define GET_INSTRINFO_MC_HELPER_DECLS
 #include "BBCPUGenInstrInfo.inc"
+
+#define GET_SUBTARGETINFO_ENUM
+#include "BBCPUGenSubtargetInfo.inc"
 
 #endif // LLVM_BBCPU_MCTARGET_DESC_H

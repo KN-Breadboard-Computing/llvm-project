@@ -13,17 +13,39 @@
 #ifndef LLVM_LIB_TARGET_BBCPU_BBCPUREGISTERINFO_H
 #define LLVM_LIB_TARGET_BBCPU_BBCPUREGISTERINFO_H
 
+#include "BBCPU.h"
 
 #include "llvm/CodeGen/TargetRegisterInfo.h"
 
 #define GET_REGINFO_HEADER
-#include "BBCompGenRegisterInfo.inc"
+#include "BBCPUGenRegisterInfo.inc"
 
 namespace llvm {
 
 class BBCPURegisterInfo : public BBCPUGenRegisterInfo {
 public:
   BBCPURegisterInfo();
+
+  const uint32_t *getCallPreservedMask(const MachineFunction &MF,
+                                       CallingConv::ID) const override;
+
+  /// Code Generation virtual methods...
+  const MCPhysReg *getCalleeSavedRegs(const MachineFunction *MF) const override;
+
+  BitVector getReservedRegs(const MachineFunction &MF) const override;
+
+  bool requiresRegisterScavenging(const MachineFunction &MF) const override;
+
+  bool eliminateFrameIndex(MachineBasicBlock::iterator II, int SPAdj,
+      unsigned FIOperandNum, RegScavenger *RS = nullptr) const override;
+
+  // Debug information queries.
+  unsigned getRARegister() const;
+  Register getFrameRegister(const MachineFunction &MF) const override;
+  Register getBaseRegister() const;
+  bool hasBasePointer(const MachineFunction &MF) const;
+
+  int getDwarfRegNum(unsigned RegNum, bool IsEH) const;
 };
 
 } // end namespace llvm

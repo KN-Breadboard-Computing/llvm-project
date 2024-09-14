@@ -26,11 +26,6 @@ using namespace llvm;
 
 namespace {
 class BBCPUAsmParser : public MCTargetAsmParser {
-  enum class ParsedMemType {
-    MemAbsolute,
-    MemZeroPage,
-  };
-
   MCAsmParser *Parser;
 
   bool emit(MCInst &Inst, const SMLoc &Loc, MCStreamer &Out);
@@ -40,7 +35,7 @@ class BBCPUAsmParser : public MCTargetAsmParser {
   int parseRegister();
   bool parseOperand(OperandVector &Operands);
   bool parseImmediate(const MCExpr *&Expr, SMLoc &Start, SMLoc &End);
-  bool parseMemory(const MCExpr *&Expr, SMLoc &Start, SMLoc &End, ParsedMemType& Type, bool Inside = false);
+  bool parseMemory(const MCExpr *&Expr, SMLoc &Start, SMLoc &End, bool Inside = false);
 
 public:
   BBCPUAsmParser(const MCSubtargetInfo &STI, MCAsmParser &P,
@@ -242,6 +237,10 @@ public:
     Inst.addOperand(MCOperand::createImm(0));
   }
 
+  bool isBrTarget() { isToken(); }
+
+  bool isCallTarget() { return isImm() || isToken(); }
+
 private:
   void addMemLikeOperands(MCInst &Inst, unsigned N) const {
     assert((Kind == Memory || Kind == MemZeroPage) && "Unexpected operand kind");
@@ -321,7 +320,7 @@ bool BBCPUAsmParser::parseImmediate(const MCExpr *&Expr, SMLoc &Start,
 }
 
 bool BBCPUAsmParser::parseMemory(const llvm::MCExpr *&Expr, llvm::SMLoc &Start,
-                                 llvm::SMLoc &End, ParsedMemType &Type, bool Inside) {
+                                 llvm::SMLoc &End, bool Inside) {
   if (Inside || getLexer().is(AsmToken::LBrac)) {
     SMLoc LBLoc = getLexer().getLoc();
     if (!Inside) getLexer().Lex(); // eat `[`
@@ -336,7 +335,6 @@ bool BBCPUAsmParser::parseMemory(const llvm::MCExpr *&Expr, llvm::SMLoc &Start,
       if (parseToken(AsmToken::RBrac, "expected `]`"))
         return true;
 
-      Type = ParsedMemType::MemAbsolute;
       Expr = Seg;
       return false;
     }
@@ -360,7 +358,6 @@ bool BBCPUAsmParser::parseMemory(const llvm::MCExpr *&Expr, llvm::SMLoc &Start,
     if (parseToken(AsmToken::RBrac, "expected `]`"))
       return true;
 
-    Type = ParsedMemType::MemZeroPage;
     return false;
   }
 
@@ -460,13 +457,8 @@ bool BBCPUAsmParser::parseOperand(OperandVector &Operands) {
       return false;
     }
 
-    ParsedMemType Type;
-    if (!parseMemory(Expr, Start, End, Type, true)) {
-      if (Type == ParsedMemType::MemAbsolute) {
-        Operands.push_back(BBCPUOperand::createMem(Expr, Start, End));
-      } else {
-        Operands.push_back(BBCPUOperand::createMemZeroPage(Expr, Start, End));
-      }
+    if (!parseMemory(Expr, Start, End, true)) {
+      Operands.push_back(BBCPUOperand::createMem(Expr, Start, End));
       return false;
     }
 

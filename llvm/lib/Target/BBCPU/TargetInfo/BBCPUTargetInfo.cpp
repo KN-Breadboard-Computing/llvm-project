@@ -11,12 +11,12 @@
 using namespace llvm;
 
 Target &llvm::getTheBBCPUTarget() {
-  static Target theBBCPUTarget;
-  return theBBCPUTarget;
+  static Target TheBBCPUTarget;
+  return TheBBCPUTarget;
 }
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeBBCPUTargetInfo() {
-  RegisterTarget<Triple::bbcpu, false> X(
+  RegisterTarget<Triple::bbcpu, /*HasJIT=*/false> X(
       getTheBBCPUTarget(), "bbcpu",
-      "8-bit CPU by KN Breadboard Computing", "BBCPU");
+      "16-bit CPU by KN Breadboard Computing", "BBCPU");
 }

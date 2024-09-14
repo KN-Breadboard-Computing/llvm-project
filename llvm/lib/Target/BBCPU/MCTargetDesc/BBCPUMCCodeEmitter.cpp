@@ -10,70 +10,60 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "BBCPUMCCodeEmitter.h"
-#include "BBCPUMCTargetDesc.h"
+#include "MCTargetDesc/BBCPUMCCodeEmitter.h"
+#include "MCTargetDesc/BBCPUMCTargetDesc.h"
+#include "MCTargetDesc/BBCPUBaseInfo.h"
 
+#include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/Statistic.h"
+#include "llvm/MC/MCCodeEmitter.h"
+#include "llvm/MC/MCContext.h"
 #include "llvm/MC/MCInst.h"
-#include "llvm/MC/MCValue.h"
-#include "llvm/Support/Debug.h"
+#include "llvm/MC/MCInstrInfo.h"
+#include "llvm/MC/MCRegisterInfo.h"
+#include "llvm/MC/MCSubtargetInfo.h"
+#include "llvm/Support/Casting.h"
 #include "llvm/Support/EndianStream.h"
-
-#define GET_INSTRMAP_INFO
-#include "BBCPUGenInstrInfo.inc"
+#include "llvm/Support/raw_ostream.h"
+#include <cassert>
 
 #define DEBUG_TYPE "mccodeemitter"
 
+STATISTIC(MCNumEmitted, "Number of MC instructions emitted");
+
 using namespace llvm;
 
-BBCPUMCCodeEmitter::BBCPUMCCodeEmitter(const llvm::MCInstrInfo &MCII,
-                                       llvm::MCContext &Ctx)
-    : MCII(&MCII) {}
+BBCPUMCCodeEmitter::BBCPUMCCodeEmitter(const MCInstrInfo &MCII, MCContext &Ctx)
+  : MCII(MCII), Ctx(Ctx) {}
 
-void BBCPUMCCodeEmitter::encodeInstruction(
-    const llvm::MCInst &Inst, llvm::SmallVectorImpl<char> &CB,
-    llvm::SmallVectorImpl<llvm::MCFixup> &Fixups,
-    const llvm::MCSubtargetInfo &STI) const {
-  LLVM_DEBUG(dbgs() << "Encoding instruction inst = " << Inst << '\n');
+void BBCPUMCCodeEmitter::encodeInstruction(const MCInst &MI, SmallVectorImpl<char> &CB,
+                                          SmallVectorImpl<MCFixup> &Fixups,
+                                          const MCSubtargetInfo &STI) const {
+  // Get instruction encoding and emit it.
+  uint64_t Bits = getBinaryCodeForInstr(MI, Fixups, STI);
+  MCNumEmitted++; // Keep track of the number of emitted insns.
 
-  const MCInstrDesc &ID = MCII->get(Inst.getOpcode());
-  unsigned Size = ID.getSize();
-
-  assert(Size > 0 && "Instruction size cannot be zero");
-
-  uint64_t BinaryOpCode = getBinaryCodeForInstr(Inst, Fixups, STI);
-  LLVM_DEBUG(dbgs() << "Encoding instruction BinaryOpCode = " << BinaryOpCode
-                    << ", Size = " << Size << '\n');
-
-  for (int64_t i = 0; i < Size; ++i) {
-    uint8_t Byte = (BinaryOpCode >> (i * 8)) & 0xFF;
-    support::endian::write(CB, Byte, llvm::endianness::little);
-  }
+  support::endian::write<uint16_t>(CB, Bits, llvm::endianness::little);
 }
 
-template <MCFixupKind Fixup, uint32_t Offset>
-uint64_t encodeImm(const MCInst &MI, unsigned int OpNo,
-                   SmallVectorImpl<llvm::MCFixup> &Fixups,
-                   const MCSubtargetInfo &STI) {
-  const MCOperand &Op = MI.getOperand(OpNo);
-
-  // If Op is just a constant simply emit it
-  if (Op.isImm()) {
-    return Op.getImm();
-  }
-
-  // If Op is an expression fill whatever it occupies with 0 and create a fixup
-  // that will fill in the slot later
-  if (Op.isExpr()) {
-    Fixups.push_back(MCFixup::create(Offset, Op.getExpr(), Fixup));
-    return 0;
-  }
-
-  llvm_unreachable("unexpected operand kind");
+unsigned
+BBCPUMCCodeEmitter::getMachineOpValue(const MCInst &MI, const MCOperand &MO,
+                                     SmallVectorImpl<MCFixup> &Fixups,
+                                     const MCSubtargetInfo &STI) const {
+  if (MO.isReg())
+    return Ctx.getRegisterInfo()->getEncodingValue(MO.getReg());
+  if (MO.isImm())
+    return static_cast<uint64_t>(MO.getImm());
+  return 0;
 }
 
-MCCodeEmitter *llvm::createBBCPUMCCodeEmitter(const llvm::MCInstrInfo &MCII,
-                                              llvm::MCContext &Ctx) {
+//#define ENABLE_INSTR_PREDICATE_VERIFIER
+#include "BBCPUGenMCCodeEmitter.inc"
+
+
+namespace llvm {
+MCCodeEmitter *createBBCPUMCCodeEmitter(const MCInstrInfo &MCII,
+                                             MCContext &Ctx) {
   return new BBCPUMCCodeEmitter(MCII, Ctx);
 }
-
-#include "BBCPUGenMCCodeEmitter.inc"
+}

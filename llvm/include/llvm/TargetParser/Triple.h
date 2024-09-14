@@ -53,7 +53,7 @@ public:
     aarch64_32,     // AArch64 (little endian) ILP32: aarch64_32
     arc,            // ARC: Synopsys ARC
     avr,            // AVR: Atmel AVR microcontroller
-    bbcpu,          // BBCPU: 8-bit CPU by KN Breadboard Computing
+    bbcpu,          // BBCPU: 16-bit CPU by KN Breadboard Computing
     bpfel,          // eBPF or extended BPF or 64-bit BPF (little endian)
     bpfeb,          // eBPF or extended BPF or 64-bit BPF (big endian)
     csky,           // CSKY: csky
@@ -909,6 +909,9 @@ public:
 
   /// Tests whether the target is LoongArch (32- and 64-bit).
   bool isLoongArch() const { return isLoongArch32() || isLoongArch64(); }
+
+  /// Tests whether the target is BBCPU.
+  bool isBBCPU() const { return getArch() == Triple::bbcpu; }
 
   /// Tests whether the target is MIPS 32-bit (little and big endian).
   bool isMIPS32() const {
